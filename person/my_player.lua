@@ -7,7 +7,7 @@ function MyPlayer:new (objid)
     x = 0,
     y = 0,
     z = 0,
-    stealTimes = 0,
+    yawDiff = 0, -- 朝向与镜头角度差值
   }
   o.action = BasePlayerAction:new(o)
   o.attr = BasePlayerAttr:new(o)
@@ -19,9 +19,4 @@ end
 
 function MyPlayer:initMyPlayer ()
   
-end
-
--- 添加偷窃次数
-function MyPlayer:addStealTimes ()
-  self.stealTimes = self.stealTimes + 1
 end

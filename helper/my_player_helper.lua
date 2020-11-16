@@ -44,9 +44,9 @@ function MyPlayerHelper:playerEnterGame (objid)
   PlayerHelper:playerEnterGame(objid)
   MyStoryHelper:playerEnterGame(objid)
   -- body
-  local story = StoryHelper:getStory()
-  story:enter(objid)
-  MyPlayerHelper:diffPersonDiffPresents(objid)
+  -- local story = StoryHelper:getStory()
+  -- story:enter(objid)
+  -- MyPlayerHelper:diffPersonDiffPresents(objid)
   -- 播放背景音乐
   -- MusicHelper:startBGM(objid, 1, true)
 end

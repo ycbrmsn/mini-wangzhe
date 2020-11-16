@@ -10,15 +10,6 @@ function MyGameHelper:setGBattleUI ()
   if (player) then
     local story = StoryHelper:getStory()
     local result = PlayerHelper:getGameResults(objid)
-    -- local msg
-    -- if (result == TEAM_RESULTS.TEAM_RESULTS_WIN) then -- 胜利
-    --   msg = story.winMsg
-    -- else
-    --   msg = story.loseMsg
-    -- end
-    -- UIHelper:setGBattleUI('left_desc', msg)
-    -- UIHelper:setGBattleUI('left_little_desc', '获得金币数：' .. player.coinNum)
-    -- UIHelper:setGBattleUI('right_little_desc', '剩余时间：' .. time)
     UIHelper:setGBattleUI('left_desc', self.desc)
     UIHelper:setLeftTitle('获得称号：')
     -- UIHelper:setRightTitle(story.name)
@@ -36,6 +27,29 @@ end
 function MyGameHelper:setNameAndDesc (name, desc)
   self.name = name
   self.desc = desc
+end
+
+-- 改变玩家朝向
+function MyGameHelper:changePlayerFace ()
+  PlayerHelper:everyPlayerDoSomeThing(function (player)
+    local pos = player:getMyPosition()
+    -- if (pos and self.index % 20 == 0) then -- player.x ~= pos.x and player.z ~= pos.z
+    if (pos and player.x ~= pos.x and player.z ~= pos.z) then 
+      local mv2 = MyVector3:new(player.x, player.y, player.z, pos.x, pos.y, pos.z)
+      local faceYaw2 = MathHelper:getActorFaceYaw(mv2)
+      -- ActorHelper:setFaceYaw(player.objid, faceYaw2)
+      -- local x, y, z = ActorHelper:getFaceDirection(player.objid)
+      -- local mv1 = MyVector3:new(x, y, z)
+      -- local faceYaw1 = MathHelper:getActorFaceYaw(mv1)
+      -- local faceYaw3 = ActorHelper:getFaceYaw(player.objid)
+      PlayerHelper:rotateCamera(player.objid, faceYaw2 - player.yawDiff, 0)
+      -- LogHelper:debug('---')
+      -- LogHelper:debug(math.floor(faceYaw1))
+      -- LogHelper:debug(math.floor(faceYaw2))
+      -- LogHelper:debug(math.floor(faceYaw3))
+      player.x, player.y, player.z = pos.x, pos.y, pos.z
+    end
+  end)
 end
 
 -- 事件
@@ -58,6 +72,7 @@ function MyGameHelper:runGame ()
   GameHelper:runGame()
   self.index = self.index + 1
   -- body
+  MyGameHelper:changePlayerFace()
 end
 
 -- 结束游戏

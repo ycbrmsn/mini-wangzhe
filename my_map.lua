@@ -4,40 +4,10 @@ MyMap = {
     
   },
   ITEM = {
-    SWORD = 4097, -- 桃木剑
-    SKULL = 4098, -- 骷髅头
-    KEY1 = 4099, -- 池末
-    KEY2 = 4100, -- 梅膏
-    KEY3 = 4101, -- 王毅
-    KEY4 = 4102, -- 梁杖
-    KEY5 = 4103, -- 甄道
-    KEY6 = 4104, -- 姚羔
-    KEY7 = 4105, -- 储依
-    KEY8 = 4106, -- 莫迟
-    KEY9 = 4119, -- 陆仁
-    KEY10 = 4120, -- 贾义
-    KEY11 = 4107, -- 林隐
-    SWORD1 = 4121, -- 甄道的桃木剑
-    SWORD2 = 4122, -- 姚羔的桃木剑
-    SWORD3 = 4123, -- 储依的桃木剑
-    SWORD4 = 4124, -- 莫迟的桃木剑
-    BAG = 4125, -- 梅膏的背包
-    LETTER = 4126, -- 池末写的信
-    MIRROR = 4127, -- 八卦镜
-    CONFUSE_CHARM = 4128, -- 迷惑符
+    ADJUST_CAMERA = 4097, -- 调整视角
   },
   ACTOR = {
-    CHIMO = 2, -- 池末
-    MEIGAO = 3, -- 梅膏
-    WANGYI = 4, -- 王毅
-    LIANGZHANG = 5, -- 梁杖
-    ZHENDAO = 6, -- 甄道
-    YAOGAO = 7, -- 姚羔
-    CHUYI = 8, -- 储依
-    MOCHI = 9, -- 莫迟
-    LUREN = 10, -- 陆仁
-    JIAYI = 11, -- 贾义
-    LINYIN = 12, -- 林隐
+    
   },
   BUFF = {
     
