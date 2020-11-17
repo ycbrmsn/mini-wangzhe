@@ -20,6 +20,7 @@ MyPlayerHelper = {
       msgMap = { present = '一张迷惑符' }
     }, -- 海绵海棠
   },
+  -- index = 16,
 }
 
 function MyPlayerHelper:diffPersonDiffPresents (objid)
@@ -66,6 +67,8 @@ function MyPlayerHelper:playerEnterArea (objid, areaid)
   PlayerHelper:playerEnterArea(objid, areaid)
   MyStoryHelper:playerEnterArea(objid, areaid)
   -- body
+  if (MySkillHelper:enterActiveArea(objid, areaid)) then
+  end
 end
 
 -- 玩家离开区域
@@ -164,8 +167,14 @@ function MyPlayerHelper:playerMotionStateChange (objid, playermotion)
   MyStoryHelper:playerMotionStateChange(objid, playermotion)
   -- body
   local player = PlayerHelper:getPlayer(objid)
-  if (playermotion == PLAYERMOTION.JUMP) then -- 跳跃
-    MySkillHelper:yanlingbilei(objid, 1)
+  if (playermotion == PLAYERMOTION.STATIC) then -- 静止
+    -- Actor:playBodyEffect(objid, self.index)
+  elseif (playermotion == PLAYERMOTION.JUMP) then -- 跳跃
+    MySkillHelper:useYanlingbilei(objid, 1)
+    -- if (not(self.index)) then
+    --   self.index = self.index + 1
+    --   LogHelper:debug(self.index)
+    -- end
   end
 end
 

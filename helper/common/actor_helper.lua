@@ -37,6 +37,8 @@ ActorHelper = {
   clickActors = {}, -- 玩家点击的actor：objid -> actor
   actormotions = {}, -- 生物及其当前对应的状态 { objid -> motion }
   initActorObjids = {}, -- 初始化生物时，每个玩家附近的所有生物的id数组 { time -> objids }
+  buffs = {}, -- 自定义buff { buffid -> buff }
+  enableMoveInfo = {}, -- 能否移动信息 { objid -> { 不能移动原因（没有原因则可移动） } }
 }
 
 function ActorHelper:new (o)
@@ -74,6 +76,21 @@ end
 
 function ActorHelper:getAllActors ()
   return self.actors
+end
+
+-- 注册buff
+function ActorHelper:registerBuff (buff)
+  self.buffs[buff.id] = buff
+end
+
+-- 获取自定义buff
+function ActorHelper:getBuff (buffid)
+  for k, v in pairs(self.buffs) do
+    if (k == buffid) then
+      return v
+    end
+  end
+  return nil
 end
 
 -- 获得生物行为
@@ -762,6 +779,45 @@ function ActorHelper:playAndStopBodyEffectById (objid, particleId, scale, time)
   end, time)
 end
 
+-- 获取能否移动信息
+function ActorHelper:getEnableMoveInfo (objid)
+  local info = self.enableMoveInfo[objid]
+  if (not(info)) then
+    info = {}
+    self.enableMoveInfo[objid] = info
+  end
+  return info
+end
+
+-- 统计不能移动原因数
+function ActorHelper:countDisableMoveReason (objid)
+  local info = ActorHelper:getEnableMoveInfo(objid)
+  local total = 0
+  for k, v in pairs(info) do
+    total = total + 1
+  end
+  return total
+end
+
+-- 使能否移动
+function ActorHelper:tryEnableMove (objid, category, switch)
+  local info = ActorHelper:getEnableMoveInfo(objid)
+  if (switch) then -- 使能移动
+    info[category] = nil
+    local total = ActorHelper:countDisableMoveReason(objid)
+    if (total == 0) then
+      ActorHelper:setEnableMoveState(objid, true)
+      return true
+    else
+      return false
+    end
+  else -- 使不能移动
+    info[category] = true
+    ActorHelper:setEnableMoveState(objid, false)
+    return true
+  end
+end
+
 -- 设置生物可移动状态
 function ActorHelper:setEnableMoveState (objid, switch)
   return self:setActionAttrState(objid, CREATUREATTR.ENABLE_MOVE, switch)
@@ -790,6 +846,31 @@ end
 -- 设置免疫跌落伤害
 function ActorHelper:setImmuneFall (objid, isadd)
   return ActorHelper:setImmuneType(objid, HURTTYPE.FALL, isadd)
+end
+
+-- 受伤效果
+function ActorHelper:playHurt (objid)
+  ActorHelper:playBodyEffect2(objid, BaseConstant.ACTORBODY_EFFECT.A0)
+end
+
+-- 睡觉效果
+function ActorHelper:playSleep (objid)
+  ActorHelper:playBodyEffect2(objid, BaseConstant.ACTORBODY_EFFECT.A29)
+end
+
+-- 停止睡觉
+function ActorHelper:stopSleep (objid)
+  ActorHelper:stopBodyEffect2(objid, BaseConstant.ACTORBODY_EFFECT.A29)
+end
+
+-- 眩晕效果
+function ActorHelper:playDizzy (objid)
+  ActorHelper:playBodyEffect2(objid, BaseConstant.ACTORBODY_EFFECT.A34)
+end
+
+-- 停止眩晕
+function ActorHelper:stopDizzy (objid)
+  ActorHelper:stopBodyEffect2(objid, BaseConstant.ACTORBODY_EFFECT.A34)
 end
 
 -- 事件
@@ -953,6 +1034,11 @@ function ActorHelper:actorAddBuff (objid, buffid, bufflvl)
   local actor = ActorHelper:getActor(objid)
   if (actor) then
     actor:addBuff(buffid, bufflvl)
+  else
+    local buff = ActorHelper:getBuff(buffid)
+    if (buff) then
+      buff.addBuff(objid)
+    end
   end
   -- body
 end
@@ -962,6 +1048,11 @@ function ActorHelper:actorRemoveBuff (objid, buffid, bufflvl)
   local actor = ActorHelper:getActor(objid)
   if (actor) then
     actor:removeBuff(buffid, bufflvl)
+  else
+    local buff = ActorHelper:getBuff(buffid)
+    if (buff) then
+      buff.removeBuff(objid)
+    end
   end
   -- body
 end
@@ -1118,6 +1209,18 @@ function ActorHelper:getEyeHeight (objid)
   return CommonHelper:callOneResultMethod(function (p)
     return Actor:getEyeHeight(objid)
   end, '获取眼睛高度', 'objid=', objid)
+end
+
+function ActorHelper:playBodyEffect2 (objid, particleId)
+  return CommonHelper:callIsSuccessMethod(function (p)
+    return Actor:playBodyEffect(objid, particleId)
+  end, '播放特效', 'objid=', objid, ',particleId=', particleId)
+end
+
+function ActorHelper:stopBodyEffect2 (objid, particleId)
+  return CommonHelper:callIsSuccessMethod(function (p)
+    return Actor:stopBodyEffect(objid, particleId)
+  end, '停止特效', 'objid=', objid, ',particleId=', particleId)
 end
 
 -- 在指定Actor身上播放特效

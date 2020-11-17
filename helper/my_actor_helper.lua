@@ -27,6 +27,9 @@ end
 function MyActorHelper:actorEnterArea (objid, areaid)
   ActorHelper:actorEnterArea(objid, areaid)
   MyStoryHelper:actorEnterArea(objid, areaid)
+  -- body
+  if (MySkillHelper:enterActiveArea(objid, areaid)) then
+  end
 end
 
 -- actor离开区域

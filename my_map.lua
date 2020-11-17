@@ -10,7 +10,7 @@ MyMap = {
     
   },
   BUFF = {
-    
+    DIZZY = 50000002, -- 眩晕
   },
   CUSTOM = {
     

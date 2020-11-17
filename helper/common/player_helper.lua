@@ -567,11 +567,19 @@ end
 
 -- 玩家获得状态效果
 function PlayerHelper:playerAddBuff (objid, buffid, bufflvl)
+  local buff = ActorHelper:getBuff(buffid)
+  if (buff) then
+    buff:addBuff(objid)
+  end
   -- body
 end
 
 -- 玩家失去状态效果
 function PlayerHelper:playerRemoveBuff (objid, buffid, bufflvl)
+  local buff = ActorHelper:getBuff(buffid)
+  if (buff) then
+    buff:removeBuff(objid)
+  end
   -- body
 end
 
