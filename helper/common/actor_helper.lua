@@ -150,11 +150,11 @@ function ActorHelper:getDistancePosition (objid, distance, angle)
   angle = angle or 0
   local pos = self:getMyPosition(objid)
   local angle = ActorHelper:getFaceYaw(objid) + angle
-  if (angle > 180) then
-    angle = angle - 360
-  elseif (angle < -180) then
-    angle = angle + 360
-  end
+  -- if (angle > 180) then
+  --   angle = angle - 360
+  -- elseif (angle < -180) then
+  --   angle = angle + 360
+  -- end
   return MathHelper:getDistancePosition(pos, angle, distance)
 end
 
@@ -698,34 +698,44 @@ function ActorHelper:lookAt (objid, toobjid, needRotateCamera)
     local myVector3 = MyVector3:new(x0, y0, z0, x, y, z)
     if (ActorHelper:isPlayer(objid) and needRotateCamera) then -- 如果执行者是三维视角玩家
       local faceYaw, facePitch
-      if (x ~= x0 or z ~= z0) then -- 不在同一竖直位置上
-        faceYaw = MathHelper:getPlayerFaceYaw(myVector3)
+      if (y == y0) then
+        facePitch = 0
+      else
         facePitch = MathHelper:getActorFacePitch(myVector3)
+      end
+      if (x ~= x0 or z ~= z0) then -- 不在同一竖直位置上
+        -- faceYaw = MathHelper:getPlayerFaceYaw(myVector3)
+        local player = PlayerHelper:getPlayer(objid)
+        faceYaw = MathHelper:getActorFaceYaw(myVector3) - player.yawDiff
       else -- 在同一竖直位置上
         faceYaw = ActorHelper:getFaceYaw(objid)
-        if (y0 < y) then -- 向上
-          facePitch = -90
-        elseif (y0 > y) then -- 向下
-          facePitch = 90
-        else -- 水平
-          facePitch = 0
-        end
+        -- if (y0 < y) then -- 向上
+        --   facePitch = -90
+        -- elseif (y0 > y) then -- 向下
+        --   facePitch = 90
+        -- else -- 水平
+        --   facePitch = 0
+        -- end
       end
       PlayerHelper:rotateCamera(objid, faceYaw, facePitch)
     else -- 执行者是生物或二维视角玩家
       local facePitch
+      if (y == y0) then
+        facePitch = 0
+      else
+        facePitch = MathHelper:getActorFacePitch(myVector3)
+      end
       if (x ~= x0 or z ~= z0) then -- 不在同一竖直位置上
         local faceYaw = MathHelper:getActorFaceYaw(myVector3)
         ActorHelper:setFaceYaw(objid, faceYaw)
-        facePitch = MathHelper:getActorFacePitch(myVector3)
       else -- 在同一竖直位置上
-        if (y0 < y) then -- 向上
-          facePitch = -90
-        elseif (y0 > y) then -- 向下
-          facePitch = 90
-        else -- 水平
-          facePitch = 0
-        end
+        -- if (y0 < y) then -- 向上
+        --   facePitch = -90
+        -- elseif (y0 > y) then -- 向下
+        --   facePitch = 90
+        -- else -- 水平
+        --   facePitch = 0
+        -- end
       end
       local result = ActorHelper:setFacePitch(objid, facePitch)
       if (not(result)) then
