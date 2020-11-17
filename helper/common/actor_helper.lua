@@ -632,18 +632,18 @@ end
 
 -- 获取距离最近的actor
 function ActorHelper:getNearestActor (objids, pos)
-  local tempDistance, objid
+  local objid, tempDistance
   for i, v in ipairs(objids) do
     local p = ActorHelper:getMyPosition(v)
     if (p) then
       local distance = MathHelper:getDistance(p, pos)
       if (not(tempDistance) or tempDistance > distance) then
-        distance = tempDistance
+        tempDistance = distance
         objid = v
       end
     end
   end
-  return objid
+  return objid, tempDistance
 end
 
 -- 获取数组中活着的actor
