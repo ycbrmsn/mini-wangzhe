@@ -163,6 +163,10 @@ function MyPlayerHelper:playerMotionStateChange (objid, playermotion)
   PlayerHelper:playerMotionStateChange(objid, playermotion)
   MyStoryHelper:playerMotionStateChange(objid, playermotion)
   -- body
+  local player = PlayerHelper:getPlayer(objid)
+  if (playermotion == PLAYERMOTION.JUMP) then -- 跳跃
+    MySkillHelper:yanlingbilei(objid, 1)
+  end
 end
 
 -- 玩家移动一格
