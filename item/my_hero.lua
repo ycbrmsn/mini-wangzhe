@@ -13,7 +13,7 @@ function BaseHero:shift (objid)
   TimeHelper:callFnAfterSecond(function ()
     local faceYaw = ActorHelper:getFaceYaw(objid) % 360
     print(faceYaw)
-    if (faceYaw > 269 and faceYaw < 270) then
+    if (faceYaw > 265 and faceYaw < 275) then
       ActorHelper:addBuff(objid, MyMap.BUFF.ZHANGLIANG, 1)
     else
       ChatHelper:sendMsg(objid, '矫正朝向中，请勿转动。')
