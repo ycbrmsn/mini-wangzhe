@@ -208,6 +208,10 @@ end
 function MyPlayerHelper:playerInputKeyDown (objid, vkey)
   PlayerHelper:playerInputKeyDown(objid, vkey)
   MyStoryHelper:playerInputKeyDown(objid, vkey)
+  -- body
+  if (vkey == 'SPACE') then
+    Zhangliang:shift(objid)
+  end
 end
 
 -- 按键处于按下状态

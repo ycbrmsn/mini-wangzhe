@@ -24,10 +24,11 @@ function AdjustCamera:useItem (objid)
   PlayerHelper:rotateCamera(objid, 0, 0)
   TimeHelper:callFnAfterSecond(function ()
     local faceYaw = ActorHelper:getFaceYaw(objid)
-    if (faceYaw) then
-      local player = PlayerHelper:getPlayer(objid)
-      player.yawDiff = faceYaw
-    end
+    LogHelper:debug(faceYaw % 360)
+  --   if (faceYaw) then
+  --     local player = PlayerHelper:getPlayer(objid)
+  --     player.yawDiff = faceYaw
+  --   end
   end, 1)
 end
 

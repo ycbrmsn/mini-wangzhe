@@ -8,6 +8,20 @@ function BaseHero:new (o)
   return o
 end
 
+function BaseHero:shift (objid)
+  PlayerHelper:rotateCamera(objid, 0, 0)
+  TimeHelper:callFnAfterSecond(function ()
+    local faceYaw = ActorHelper:getFaceYaw(objid) % 360
+    print(faceYaw)
+    if (faceYaw > 269 and faceYaw < 270) then
+      ActorHelper:addBuff(objid, MyMap.BUFF.ZHANGLIANG, 1)
+    else
+      ChatHelper:sendMsg(objid, '矫正朝向中，请勿转动。')
+      self:shift(objid)
+    end
+  end, 1)
+end
+
 -- 张良
 Zhangliang = BaseHero:new({
   name = 'zhangliang',
