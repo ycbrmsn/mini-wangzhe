@@ -69,11 +69,11 @@ end
 -- 生成
 function Zhangliang:generateSkill1 (objid, pos, angle, distance, level)
   local positions = MathHelper:getRegularDistancePositions(pos, angle, distance, 3)
-  local info = MySkillHelper:getSkillInfo(objid, self.name, 1)
+  local info = MySkillHelper:getSkillInfo(objid, 1)
   self:clearSkill1(objid, info)
   for i, v in ipairs(positions) do
     local areaid = AreaHelper:createAreaRect(v, { x = 0, y = 0, z = 0 })
-    MySkillHelper:addActiveArea(objid, self.name, 1, areaid)
+    MySkillHelper:addActiveArea(objid, 1, areaid)
     info[areaid] = { pos = v, level = level }
     WorldHelper:playBodyEffect(v, BaseConstant.BODY_EFFECT.LIGHT37)
   end
@@ -85,10 +85,9 @@ end
 
 -- 敌方进入言灵壁垒区域
 function Zhangliang:enterSkill1 (objid, areaid)
-  local skillObj = self.activeAreas[areaid].objid
   -- if (not(ActorHelper:isTheSameTeamActor(objid, skillObj))) then -- 不同队伍
   if (true) then
-    local info = MySkillHelper:getSkillInfo(skillObj, self.name, 1)
+    local info = MySkillHelper:getSkillInfo(self.objid, 1)
     local pos = info[areaid].pos
     local level = info[areaid].level
     MySkillHelper:delActiveArea(areaid)
