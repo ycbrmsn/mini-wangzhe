@@ -1037,7 +1037,7 @@ function ActorHelper:actorAddBuff (objid, buffid, bufflvl)
   else
     local buff = ActorHelper:getBuff(buffid)
     if (buff) then
-      buff.addBuff(objid)
+      buff:addBuff(objid)
     end
   end
   -- body
@@ -1051,7 +1051,7 @@ function ActorHelper:actorRemoveBuff (objid, buffid, bufflvl)
   else
     local buff = ActorHelper:getBuff(buffid)
     if (buff) then
-      buff.removeBuff(objid)
+      buff:removeBuff(objid)
     end
   end
   -- body
