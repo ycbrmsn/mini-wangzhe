@@ -20,7 +20,6 @@ MyPlayerHelper = {
       msgMap = { present = '一张迷惑符' }
     }, -- 海绵海棠
   },
-  -- index = 16,
 }
 
 function MyPlayerHelper:diffPersonDiffPresents (objid)
@@ -48,8 +47,6 @@ function MyPlayerHelper:playerEnterGame (objid)
   TimeHelper:callFnAfterSecond(function ()
     AdjustCamera:useItem(objid)
   end, 1)
-  -- local story = StoryHelper:getStory()
-  -- story:enter(objid)
   -- MyPlayerHelper:diffPersonDiffPresents(objid)
   -- 播放背景音乐
   -- MusicHelper:startBGM(objid, 1, true)
@@ -169,12 +166,8 @@ function MyPlayerHelper:playerMotionStateChange (objid, playermotion)
   local player = PlayerHelper:getPlayer(objid)
   if (playermotion == PLAYERMOTION.STATIC) then -- 静止
     -- Actor:playBodyEffect(objid, self.index)
+    -- MySkillHelper:useYanlingbilei(objid, 1)
   elseif (playermotion == PLAYERMOTION.JUMP) then -- 跳跃
-    MySkillHelper:useYanlingbilei(objid, 1)
-    -- if (not(self.index)) then
-    --   self.index = self.index + 1
-    --   LogHelper:debug(self.index)
-    -- end
   end
 end
 

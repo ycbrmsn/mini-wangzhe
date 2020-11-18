@@ -33,3 +33,10 @@ function Dizzy:removeBuff (objid)
   -- 迟缓状态
   ActorHelper:addBuff(objid, 8, 3, 20)
 end
+
+-- 变身张良
+ZhangliangBuff = BaseBuff:new({ id = MyMap.BUFF.ZHANGLIANG, name = 'zhangliang' })
+
+function ZhangliangBuff:addBuff (objid)
+  Zhangliang:new(objid)
+end

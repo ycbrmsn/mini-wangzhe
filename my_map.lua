@@ -5,11 +5,13 @@ MyMap = {
   },
   ITEM = {
     ADJUST_CAMERA = 4097, -- 调整视角
+    YANLINGBILEI = 4101, -- 言灵壁垒
   },
   ACTOR = {
     
   },
   BUFF = {
+    ZHANGLIANG = 50000001, -- 变身张良
     DIZZY = 50000002, -- 眩晕
   },
   CUSTOM = {
