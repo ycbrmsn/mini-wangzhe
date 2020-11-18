@@ -349,7 +349,8 @@ function TimeHelper:delFnFastRuns (t)
   local isDel = false
   for i = #self.fnFastRuns, 1, -1 do
     if (self.fnFastRuns[i][3] and self.fnFastRuns[i][3] == t) then
-      table.remove(self.fnFastRuns, i)
+      -- table.remove(self.fnFastRuns, i)
+      self.fnFastRuns[i] = nil
       isDel = true
     end
   end
@@ -359,11 +360,15 @@ end
 -- 运行方法，然后删除
 function TimeHelper:runFnFastRuns ()
   for i = #self.fnFastRuns, 1, -1 do
-    self.fnFastRuns[i][1] = self.fnFastRuns[i][1] - 50
-    if (self.fnFastRuns[i][1] <= 0) then
-      LogHelper:call(function ()
-        self.fnFastRuns[i][2]()
-      end)
+    if (self.fnFastRuns[i]) then -- 没有被删除
+      self.fnFastRuns[i][1] = self.fnFastRuns[i][1] - 50
+      if (self.fnFastRuns[i][1] <= 0) then
+        LogHelper:call(function ()
+          self.fnFastRuns[i][2]()
+        end)
+        table.remove(self.fnFastRuns, i)
+      end
+    else
       table.remove(self.fnFastRuns, i)
     end
   end
