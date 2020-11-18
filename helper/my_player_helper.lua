@@ -44,6 +44,7 @@ function MyPlayerHelper:playerEnterGame (objid)
   PlayerHelper:playerEnterGame(objid)
   MyStoryHelper:playerEnterGame(objid)
   -- body
+  PlayerHelper:setJumpPower(objid, 0) -- 跳跃力为0
   TimeHelper:callFnAfterSecond(function ()
     AdjustCamera:useItem(objid)
   end, 1)
@@ -168,6 +169,7 @@ function MyPlayerHelper:playerMotionStateChange (objid, playermotion)
     -- Actor:playBodyEffect(objid, self.index)
     -- MySkillHelper:useYanlingbilei(objid, 1)
   elseif (playermotion == PLAYERMOTION.JUMP) then -- 跳跃
+    ActorHelper:playAct(objid, ActorHelper.ACT.ATTACK)
   end
 end
 

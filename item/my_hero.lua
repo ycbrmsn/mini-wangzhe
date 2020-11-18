@@ -29,7 +29,15 @@ function Zhangliang:new (objid)
   MySkillHelper:register(o)
   setmetatable(o, self)
   self.__index = self
+  o:init()
   return o
+end
+
+function Zhangliang:init ()
+  PlayerHelper:setMaxHp(self.objid, self.maxHp)
+  PlayerHelper:setHp(self.objid, self.maxHp)
+  -- PlayerHelper:setMaxHunger(self.objid, self.maxMp)
+  PlayerHelper:setFoodLevel(self.objid, self.maxMp)
 end
 
 function Zhangliang:useSkill1 (objid)

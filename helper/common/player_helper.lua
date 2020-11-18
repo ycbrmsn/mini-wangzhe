@@ -326,6 +326,16 @@ function PlayerHelper:setDimension (objid, dimension)
   return self:setAttr(objid, PLAYERATTR.DIMENSION, dimension)
 end
 
+-- 设置当前饥饿度
+function PlayerHelper:setHunger (objid, hunger)
+  return self:setAttr(objid, PLAYERATTR.CUR_HUNGER, hunger)
+end
+
+-- 设置最大饥饿度 2020-11-18 测试依然无效
+function PlayerHelper:setMaxHunger (objid, hunger)
+  return self:setAttr(objid, PLAYERATTR.MAX_HUNGER, hunger)
+end
+
 function PlayerHelper:addAttr (objid, attrtype, addVal)
   local curVal = self:getAttr(objid, attrtype)
   return self:setAttr(objid, attrtype, curVal + addVal)
