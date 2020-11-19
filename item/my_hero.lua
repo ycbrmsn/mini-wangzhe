@@ -3,6 +3,10 @@ BaseHero = {
   level = 1, -- 人物等级
   attSpace = 20, -- 攻击间隔
   attCd = 0, -- 攻击冷却
+  targetCategory = 1, -- 攻击模式（1英雄2生物3建筑）
+  attCategory = 1, -- 普攻方式（1近程攻击2远程攻击）
+  meleeSize = 2, -- 近程攻击距离
+  remoteSize = 4, -- 远程攻击距离
 } 
 
 function BaseHero:new (o)
@@ -12,6 +16,7 @@ function BaseHero:new (o)
   return o
 end
 
+-- 变身
 function BaseHero:shift (objid)
   PlayerHelper:rotateCamera(objid, 0, 0)
   TimeHelper:callFnAfterSecond(function ()
@@ -34,9 +39,64 @@ function BaseHero:resetAttCd ()
   end, 0.05 * self.attSpace, self.objid .. 'resetAttCd')
 end
 
+-- 普攻
+function BaseHero:attack ()
+  if (self.attCd == 0) then
+    self:resetAttCd()
+    ActorHelper:playAct(self.objid, ActorHelper.ACT.ATTACK)
+    if (self.attCategory == 1) then
+      self:meleeAtt()
+    else
+      self:remoteAtt()
+    end
+  end
+end
+
+-- 近程攻击
+function BaseHero:meleeAtt ()
+  if (self.targetCategory == 1) then -- 英雄
+
+  elseif (self.targetCategory == 2) then -- 生物
+
+  elseif (self.targetCategory == 3) then -- 建筑
+
+  end
+end
+
+-- 远程攻击
+function BaseHero:remoteAtt ()
+  local player = PlayerHelper:getPlayer(self.objid)
+  local pos = player:getMyPosition()
+  if (self.targetCategory == 1) then -- 英雄
+    local dim = { x = self.remoteSize, y = 3, z = self.remoteSize }
+    local objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+    if (objids and #objids == 0) then
+      objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+    end
+    local pos1, pos2 = player:getDistancePosition(1)
+    pos1.y = pos1.y + 1
+    if (not(objids) or #objids == 0) then -- 没有目标
+      pos2 = player:getDistancePosition(self.remoteSize)
+      pos2.y = pos2.y + 1
+    else
+      local nearestObjid = ActorHelper:getNearestActor(objids, pos)
+      player:lookAt(nearestObjid)
+      pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
+    end
+    local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
+      12051, pos1, pos2, 50)
+    -- ActorHelper:playBodyEffect(projectileid, BaseConstant.BODY_EFFECT.PARTICLE24)
+  elseif (self.targetCategory == 2) then -- 生物
+
+  elseif (self.targetCategory == 3) then -- 建筑
+
+  end
+end
+
 -- 张良
 Zhangliang = BaseHero:new({
   name = 'zhangliang',
+  attCategory = 2, -- 远程攻击
   phyAtt = 5, -- 物攻
   magAtt = 10, -- 法攻
   maxHp = 1000, -- 最大生命
@@ -65,6 +125,7 @@ function Zhangliang:init ()
   PlayerHelper:setFoodLevel(self.objid, self.maxMp)
 end
 
+-- 使用一技能
 function Zhangliang:useSkill1 (objid)
   local innerSize, outerSize = 4, 6
   local pos = ActorHelper:getMyPosition(objid)

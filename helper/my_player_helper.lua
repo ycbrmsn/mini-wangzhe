@@ -216,12 +216,7 @@ function MyPlayerHelper:playerInputKeyDown (objid, vkey)
     local hero = MySkillHelper:getHero(objid)
     if (hero) then
       if (player:ableAction()) then
-        if (hero.attCd == 0) then
-          ActorHelper:playAct(objid, ActorHelper.ACT.ATTACK)
-          hero:resetAttCd()
-        else
-          -- LogHelper:debug(hero.attCd)
-        end
+        hero:attack()
       end
     else
       ChatHelper:sendSpacedMsg(objid, 'attack', 2, '你目前还不是英雄，无法普攻。')
