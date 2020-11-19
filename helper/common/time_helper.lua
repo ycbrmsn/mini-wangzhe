@@ -350,7 +350,7 @@ function TimeHelper:delFnFastRuns (t)
   for i = #self.fnFastRuns, 1, -1 do
     if (self.fnFastRuns[i][3] and self.fnFastRuns[i][3] == t) then
       -- table.remove(self.fnFastRuns, i)
-      self.fnFastRuns[i] = nil
+      self.fnFastRuns[i] = false
       isDel = true
     end
   end
