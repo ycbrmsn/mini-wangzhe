@@ -20,3 +20,12 @@ end
 function MyPlayer:initMyPlayer ()
   
 end
+
+-- 能否操作
+function MyPlayer:ableAction ()
+  if (ActorHelper:hasBuff(self.objid, MyMap.BUFF.DIZZY)) then
+    LogHelper:debug(false)
+    return false
+  end
+  return true
+end

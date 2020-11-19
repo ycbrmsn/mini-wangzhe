@@ -1,5 +1,9 @@
 -- 我的英雄
-BaseHero = {} 
+BaseHero = {
+  level = 1, -- 人物等级
+  attSpace = 20, -- 攻击间隔
+  attCd = 0, -- 攻击冷却
+} 
 
 function BaseHero:new (o)
   o = o or {}
@@ -22,15 +26,22 @@ function BaseHero:shift (objid)
   end, 1)
 end
 
+-- 重置攻击冷却
+function BaseHero:resetAttCd ()
+  self.attCd = self.attSpace
+  TimeHelper:callFnFastRuns(function ()
+    self.attCd = 0
+  end, 0.05 * self.attSpace, self.objid .. 'resetAttCd')
+end
+
 -- 张良
 Zhangliang = BaseHero:new({
   name = 'zhangliang',
-  level = 1, -- 人物等级
   phyAtt = 5, -- 物攻
   magAtt = 10, -- 法攻
-  maxHp = 1000,
-  maxMp = 1000,
-  speed = 10,
+  maxHp = 1000, -- 最大生命
+  maxMp = 1000, -- 最大法力
+  speed = 10, -- 移动速度
   skillnames = { '言灵咒印', '言灵壁垒', '言灵侵蚀', '言灵操纵' },
   skillLevels = { 0, 0, 0 }, -- 技能等级
 })

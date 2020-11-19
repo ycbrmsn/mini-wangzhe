@@ -169,7 +169,7 @@ function MyPlayerHelper:playerMotionStateChange (objid, playermotion)
     -- Actor:playBodyEffect(objid, self.index)
     -- MySkillHelper:useYanlingbilei(objid, 1)
   elseif (playermotion == PLAYERMOTION.JUMP) then -- 跳跃
-    ActorHelper:playAct(objid, ActorHelper.ACT.ATTACK)
+    -- ActorHelper:playAct(objid, ActorHelper.ACT.ATTACK)
   end
 end
 
@@ -209,8 +209,23 @@ function MyPlayerHelper:playerInputKeyDown (objid, vkey)
   PlayerHelper:playerInputKeyDown(objid, vkey)
   MyStoryHelper:playerInputKeyDown(objid, vkey)
   -- body
+  local player = PlayerHelper:getPlayer(objid)
   if (vkey == 'SPACE') then
-    Zhangliang:shift(objid)
+    -- Zhangliang:shift(objid)
+    -- LogHelper:debug('space')
+    local hero = MySkillHelper:getHero(objid)
+    if (hero) then
+      if (player:ableAction()) then
+        if (hero.attCd == 0) then
+          ActorHelper:playAct(objid, ActorHelper.ACT.ATTACK)
+          hero:resetAttCd()
+        else
+          -- LogHelper:debug(hero.attCd)
+        end
+      end
+    else
+      ChatHelper:sendSpacedMsg(objid, 'attack', 2, '你目前还不是英雄，无法普攻。')
+    end
   end
 end
 
