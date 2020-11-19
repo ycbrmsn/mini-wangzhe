@@ -45,6 +45,31 @@ function Yanlingbilei:selectItem (objid, index)
     ChatHelper:sendSpacedMsg(objid, self.name, 2, '你无法使用此技能')
   else
     ItemHelper:recordUseSkill(objid, self.id, self.cd)
-    hero:useSkill1(objid, 1)
+    hero:useSkill1(objid)
   end
+end
+
+function Yanlingbilei:useItem (objid)
+  -- body
+end
+
+-- 言灵命数
+Yanlingmingshu = BaseItem:new({
+  id = MyMap.ITEM.YANLINGMINGSHU,
+  cd = 10,
+  name = 'zhangliang',
+})
+
+function Yanlingmingshu:selectItem (objid, index)
+  local hero = MySkillHelper:getHero(objid)
+  if (not(hero) or hero.name ~= self.name) then
+    ChatHelper:sendSpacedMsg(objid, self.name, 2, '你无法使用此技能')
+  else
+    ItemHelper:recordUseSkill(objid, self.id, self.cd)
+    hero:useSkill2(objid)
+  end
+end
+
+function Yanlingmingshu:useItem (objid)
+  -- body
 end

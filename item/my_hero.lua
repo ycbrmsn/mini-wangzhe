@@ -145,13 +145,13 @@ Zhangliang = BaseHero:new({
   maxMp = 1000, -- 最大法力
   speed = 10, -- 移动速度
   skillnames = { '言灵咒印', '言灵壁垒', '言灵侵蚀', '言灵操纵' },
-  skillLevels = { 0, 0, 0 }, -- 技能等级
 })
 
 function Zhangliang:new (objid)
   local o = {
     objid = objid,
     skillData = {},
+    skillLevels = { 0, 0, 0 }, -- 技能等级
   }
   MySkillHelper:register(o)
   setmetatable(o, self)
@@ -178,16 +178,16 @@ function Zhangliang:useSkill1 (objid)
   end
   if (not(objids) or #objids == 0) then -- 外圈没有找到目标
     local angle = ActorHelper:getFaceYaw(objid)
-    self:generateSkill1(objid, pos, angle, innerSize, level)
+    self:generateSkill1(objid, pos, angle, innerSize)
   else -- 外圈找到目标
     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
     local targetPos = ActorHelper:getMyPosition(nearestObjid)
     local angle = MathHelper:getActorFaceYaw(MyVector3:new(pos, targetPos))
     ActorHelper:lookAt(objid, nearestObjid)
     if (distance <= innerSize) then -- 在技能范围内
-      self:generateSkill1(objid, pos, angle, distance, level)
+      self:generateSkill1(objid, pos, angle, distance)
     else -- 不在范围内
-      self:generateSkill1(objid, pos, angle, innerSize, level)
+      self:generateSkill1(objid, pos, angle, innerSize)
     end
   end
 end
@@ -199,24 +199,24 @@ function Zhangliang:clearSkill1 (objid, info)
     WorldHelper:stopBodyEffect(v.pos, BaseConstant.BODY_EFFECT.LIGHT37)
     info[areaid] = nil
   end
-  TimeHelper:delFnFastRuns(objid .. self.name .. '1')
+  TimeHelper:delFnFastRuns(objid .. self.name .. 1)
 end
 
 -- 生成
-function Zhangliang:generateSkill1 (objid, pos, angle, distance, level)
+function Zhangliang:generateSkill1 (objid, pos, angle, distance)
   local positions = MathHelper:getRegularDistancePositions(pos, angle, distance, 3)
   local info = MySkillHelper:getSkillInfo(objid, 1)
   self:clearSkill1(objid, info)
   for i, v in ipairs(positions) do
-    local areaid = AreaHelper:createAreaRect(v, { x = 0, y = 0, z = 0 })
+    local areaid = AreaHelper:createAreaRect(v, { x = 0, y = 1, z = 0 })
     MySkillHelper:addActiveArea(objid, 1, areaid)
-    info[areaid] = { pos = v, level = level }
+    info[areaid] = { pos = v }
     WorldHelper:playBodyEffect(v, BaseConstant.BODY_EFFECT.LIGHT37)
   end
   -- 一定时间后清除
   TimeHelper:callFnFastRuns(function ()
     self:clearSkill1(objid, info)
-  end, 3, objid .. 'zhangliang1')
+  end, 3, objid .. self.name .. 1)
 end
 
 -- 敌方进入言灵壁垒区域
@@ -225,10 +225,79 @@ function Zhangliang:enterSkill1 (objid, areaid)
   if (true) then
     local info = MySkillHelper:getSkillInfo(self.objid, 1)
     local pos = info[areaid].pos
-    local level = info[areaid].level
+    local level = self.skillLevels[1]
     MySkillHelper:delActiveArea(areaid)
     info[areaid] = nil
     WorldHelper:stopBodyEffect(pos, BaseConstant.BODY_EFFECT.LIGHT37)
+    -- 眩晕迟缓效果
+    ActorHelper:playHurt(objid)
+    ActorHelper:addBuff(objid, MyMap.BUFF.DIZZY, 1, 20) -- 眩晕
+    -- 根据level与玩家属性计算伤害
+  end
+end
+
+-- 使用二技能
+function Zhangliang:useSkill2 (objid)
+  local innerSize, outerSize = 4, 6
+  local pos = ActorHelper:getMyPosition(objid)
+  pos.y = 7
+  local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
+  if (objids and #objids == 0) then
+    objids = ActorHelper:getAllCreaturesArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
+  end
+  if (not(objids) or #objids == 0) then -- 外圈没有找到目标
+    self:generateSkill2(objid, innerSize)
+  else -- 外圈找到目标
+    local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
+    local targetPos = ActorHelper:getMyPosition(nearestObjid)
+    ActorHelper:lookAt(objid, nearestObjid)
+    if (distance <= innerSize) then -- 在技能范围内
+      self:generateSkill2(objid, distance)
+    else -- 不在范围内
+      self:generateSkill2(objid, innerSize)
+    end
+  end
+end
+
+-- 清除效果
+function Zhangliang:clearSkill2 (objid, info)
+  if (info.areaid) then
+    MySkillHelper:delActiveArea(info.areaid)
+    WorldHelper:stopBodyEffect(info.pos, BaseConstant.BODY_EFFECT.PROMPT14)
+    info.areaid = nil
+    TimeHelper:delFnFastRuns(objid .. self.name .. 2)
+  end
+end
+
+-- 生成
+function Zhangliang:generateSkill2 (objid, distance)
+  local player = PlayerHelper:getPlayer(objid)
+  local pos = player:getDistancePosition(distance)
+  local info = MySkillHelper:getSkillInfo(objid, 2)
+  self:clearSkill2(objid, info)
+  local posBeg = MyPosition:new(pos.x - 2, 7, pos.z - 2)
+  local posEnd = MyPosition:new(pos.x + 1, 9, pos.z + 1)
+  local areaid = AreaHelper:createAreaRectByRange(posBeg, posEnd)
+  MySkillHelper:addActiveArea(objid, 2, areaid)
+  info.areaid = areaid
+  info.pos = pos
+  WorldHelper:playBodyEffect(pos, BaseConstant.BODY_EFFECT.PROMPT14, 3)
+  -- 一定时间后清除
+  TimeHelper:callFnFastRuns(function ()
+    self:clearSkill2(objid, info)
+  end, 4, objid .. self.name .. 2)
+end
+
+-- 敌方进入言灵壁垒区域
+function Zhangliang:enterSkill2 (objid, areaid)
+  -- if (not(ActorHelper:isTheSameTeamActor(objid, skillObj))) then -- 不同队伍
+  if (true) then
+    local info = MySkillHelper:getSkillInfo(self.objid, 1)
+    local pos = info[areaid].pos
+    local level = info[areaid].level
+    MySkillHelper:delActiveArea(areaid)
+    info[areaid] = nil
+    WorldHelper:stopBodyEffect(pos, BaseConstant.BODY_EFFECT.PROMPT14)
     -- 眩晕迟缓效果
     ActorHelper:playHurt(objid)
     ActorHelper:addBuff(objid, MyMap.BUFF.DIZZY, 1, 20) -- 眩晕
