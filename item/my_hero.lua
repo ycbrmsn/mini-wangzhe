@@ -5,8 +5,10 @@ BaseHero = {
   attCd = 0, -- 攻击冷却
   targetCategory = 1, -- 攻击模式（1英雄2生物3建筑）
   attCategory = 1, -- 普攻方式（1近程攻击2远程攻击）
-  meleeSize = 2, -- 近程攻击距离
+  meleeSize = 1, -- 近程攻击距离
   remoteSize = 4, -- 远程攻击距离
+  doubleHurt = 2, -- 暴击伤害
+  doubleRatio = 0, -- 暴击概率
 } 
 
 function BaseHero:new (o)
@@ -43,6 +45,7 @@ end
 function BaseHero:attack ()
   if (self.attCd == 0) then
     self:resetAttCd()
+    ActorHelper:addBuff(self.objid, MyMap.BUFF.ATTACK, 1, math.ceil(self.attSpace / 5)) -- 攻击不可移动时长
     ActorHelper:playAct(self.objid, ActorHelper.ACT.ATTACK)
     if (self.attCategory == 1) then
       self:meleeAtt()
@@ -54,49 +57,88 @@ end
 
 -- 近程攻击
 function BaseHero:meleeAtt ()
+  local pos = ActorHelper:getMyPosition(self.objid)
+  local dim = { x = self.meleeSize, y = 3, z = self.meleeSize }
   if (self.targetCategory == 1) then -- 英雄
-
+    local objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+    if (objids and #objids == 0) then
+      objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+    end
+    self:meleeAtt2(objids, pos)
   elseif (self.targetCategory == 2) then -- 生物
-
+    local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+    if (objids and #objids == 0) then
+      objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+    end
+    self:meleeAtt2(objids, pos)
   elseif (self.targetCategory == 3) then -- 建筑
 
+  end
+end
+
+function BaseHero:meleeAtt2 (objids, pos)
+  local player = PlayerHelper:getPlayer(self.objid)
+  local dim = { x = 1, y = 3, z = 1 }
+  if (not(objids) or #objids == 0) then -- 没有目标
+    
+  else
+    local nearestObjid = ActorHelper:getNearestActor(objids, pos)
+    player:lookAt(nearestObjid)
+    local nearPos = ActorHelper:getMyPosition(nearestObjid)
+    nearPos.y = nearPos.y + 1
+    local objids1 = ActorHelper:getAllPlayersArroundPos(nearPos, dim, self.objid, false)
+    local objids2 = ActorHelper:getAllCreaturesArroundPos(nearPos, dim, self.objid, false)
+    for i, v in ipairs(objids2) do
+      table.insert(objids1, v)
+    end
+    for i, v in ipairs(objids1) do
+      ActorHelper:playHurt(v)
+    end
   end
 end
 
 -- 远程攻击
 function BaseHero:remoteAtt ()
-  local player = PlayerHelper:getPlayer(self.objid)
-  local pos = player:getMyPosition()
+  local pos = ActorHelper:getMyPosition(self.objid)
+  local dim = { x = self.remoteSize, y = 3, z = self.remoteSize }
   if (self.targetCategory == 1) then -- 英雄
-    local dim = { x = self.remoteSize, y = 3, z = self.remoteSize }
     local objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
     if (objids and #objids == 0) then
       objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
     end
-    local pos1, pos2 = player:getDistancePosition(1)
-    pos1.y = pos1.y + 1
-    if (not(objids) or #objids == 0) then -- 没有目标
-      pos2 = player:getDistancePosition(self.remoteSize)
-      pos2.y = pos2.y + 1
-    else
-      local nearestObjid = ActorHelper:getNearestActor(objids, pos)
-      player:lookAt(nearestObjid)
-      pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
-    end
-    local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
-      12051, pos1, pos2, 50)
-    -- ActorHelper:playBodyEffect(projectileid, BaseConstant.BODY_EFFECT.PARTICLE24)
+    self:remoteAtt2(objids, pos, dim)
   elseif (self.targetCategory == 2) then -- 生物
-
+    local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+    if (objids and #objids == 0) then
+      objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+    end
+    self:remoteAtt2(objids, pos, dim)
   elseif (self.targetCategory == 3) then -- 建筑
 
   end
 end
 
+function BaseHero:remoteAtt2 (objids, pos, dim)
+  local player = PlayerHelper:getPlayer(self.objid)
+  local pos1, pos2 = player:getDistancePosition(1)
+  pos1.y = pos1.y + 1
+  if (not(objids) or #objids == 0) then -- 没有目标
+    pos2 = player:getDistancePosition(self.remoteSize)
+    pos2.y = pos2.y + 1
+  else
+    local nearestObjid = ActorHelper:getNearestActor(objids, pos)
+    player:lookAt(nearestObjid)
+    pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
+  end
+  local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
+    12051, pos1, pos2, 50)
+  -- ActorHelper:playBodyEffect(projectileid, BaseConstant.BODY_EFFECT.PARTICLE24)
+end
+
 -- 张良
 Zhangliang = BaseHero:new({
   name = 'zhangliang',
-  attCategory = 2, -- 远程攻击
+  -- attCategory = 2, -- 远程攻击
   phyAtt = 5, -- 物攻
   magAtt = 10, -- 法攻
   maxHp = 1000, -- 最大生命
