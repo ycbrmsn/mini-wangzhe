@@ -28,10 +28,12 @@ function Dizzy:addBuff (objid)
 end
 
 function Dizzy:removeBuff (objid)
-  ActorHelper:stopDizzy(objid)
-  -- ActorHelper:tryEnableMove(objid, self.name, true)
-  -- 迟缓状态
-  ActorHelper:addBuff(objid, 8, 3, 20)
+  if (not(ActorHelper:hasBuff(objid, self.id))) then
+    ActorHelper:stopDizzy(objid)
+    -- ActorHelper:tryEnableMove(objid, self.name, true)
+    -- 迟缓状态
+    ActorHelper:addBuff(objid, 8, 3, 20)
+  end
 end
 
 -- 变身张良
