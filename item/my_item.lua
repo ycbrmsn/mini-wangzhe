@@ -32,6 +32,14 @@ function AdjustCamera:useItem (objid)
   end, 1)
 end
 
+ToZhangliang = BaseItem:new({ id = MyMap.ITEM.ZHANGLIANG })
+
+function ToZhangliang:useItem (objid)
+  if (BackpackHelper:removeGridItemByItemID(objid, self.id, 1)) then
+    Zhangliang:shift(objid)
+  end
+end
+
 -- 言灵壁垒
 Yanlingbilei = BaseItem:new({
   id = MyMap.ITEM.YANLINGBILEI,

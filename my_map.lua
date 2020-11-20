@@ -8,6 +8,7 @@ MyMap = {
     YANLINGBILEI = 4101, -- 言灵壁垒
     YANLINGMINGSHU = 4102, -- 言灵命数
     YANLINGZHANGKONG = 4103, -- 言灵掌控
+    ZHANGLIANG = 4104, -- 变身张良
   },
   ACTOR = {
     
