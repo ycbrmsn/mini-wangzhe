@@ -175,59 +175,61 @@ function Zhangliang:init ()
 end
 
 -- 使用一技能
-function Zhangliang:useSkill1 (objid)
+function Zhangliang:useSkill1 ()
   local innerSize, outerSize = 4, 6
-  local player = PlayerHelper:getPlayer(objid)
-  local pos = ActorHelper:getMyPosition(objid)
+  local player = PlayerHelper:getPlayer(self.objid)
+  local pos = ActorHelper:getMyPosition(self.objid)
   pos.y = 7
-  local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
+  local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, self.objid, false)
   if (objids and #objids == 0) then
-    objids = ActorHelper:getAllCreaturesArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
+    objids = ActorHelper:getAllCreaturesArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, self.objid, false)
   end
   if (not(objids) or #objids == 0) then -- 外圈没有找到目标
-    local angle = ActorHelper:getFaceYaw(objid)
-    self:generateSkill1(objid, pos, angle, innerSize)
+    local angle = ActorHelper:getFaceYaw(self.objid)
+    self:generateSkill1(pos, angle, innerSize)
   else -- 外圈找到目标
     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
     local targetPos = ActorHelper:getMyPosition(nearestObjid)
     local angle = MathHelper:getActorFaceYaw(MyVector3:new(pos, targetPos))
     if (distance <= innerSize) then -- 在技能范围内
-      self:generateSkill1(objid, pos, angle, distance)
+      self:generateSkill1(pos, angle, distance)
     else -- 不在范围内
-      self:generateSkill1(objid, pos, angle, innerSize)
+      self:generateSkill1(pos, angle, innerSize)
     end
     player:lookAt(nearestObjid)
   end
 end
 
 -- 清除效果
-function Zhangliang:clearSkill1 (objid, info)
+function Zhangliang:clearSkill1 (info)
   for areaid, v in pairs(info) do
     MySkillHelper:delActiveArea(areaid)
-    WorldHelper:stopBodyEffect(v.pos, BaseConstant.BODY_EFFECT.LIGHT37)
+    local particleid = self:getSkill1Particleid()
+    WorldHelper:stopBodyEffect(v.pos, particleid)
     info[areaid] = nil
   end
-  TimeHelper:delFnFastRuns(objid .. self.name .. 1)
+  TimeHelper:delFnFastRuns(self.objid .. self.name .. 1)
 end
 
 -- 生成
-function Zhangliang:generateSkill1 (objid, pos, angle, distance)
+function Zhangliang:generateSkill1 (pos, angle, distance)
   local positions = MathHelper:getRegularDistancePositions(pos, angle, distance, 3)
-  local info = MySkillHelper:getSkillInfo(objid, 1)
-  self:clearSkill1(objid, info)
+  local info = MySkillHelper:getSkillInfo(self.objid, 1)
+  self:clearSkill1(info)
   for i, v in ipairs(positions) do
     local areaid = AreaHelper:createAreaRect(v, { x = 0, y = 1, z = 0 })
-    MySkillHelper:addActiveArea(objid, 1, areaid)
+    MySkillHelper:addActiveArea(self.objid, 1, areaid)
     info[areaid] = { pos = v }
-    WorldHelper:playBodyEffect(v, BaseConstant.BODY_EFFECT.LIGHT37)
+    local particleid = self:getSkill1Particleid()
+    WorldHelper:playBodyEffect(v, particleid)
   end
   -- 一定时间后清除
   TimeHelper:callFnFastRuns(function ()
-    self:clearSkill1(objid, info)
-  end, 3, objid .. self.name .. 1)
+    self:clearSkill1(info)
+  end, 3, self.objid .. self.name .. 1)
 end
 
--- 敌方进入言灵壁垒区域
+-- 敌方进入言灵壁垒区域 objid敌方
 function Zhangliang:enterSkill1 (objid, areaid)
   -- if (not(ActorHelper:isTheSameTeamActor(objid, skillObj))) then -- 不同队伍
   if (true) then
@@ -236,7 +238,8 @@ function Zhangliang:enterSkill1 (objid, areaid)
     local level = self.skillLevels[1]
     MySkillHelper:delActiveArea(areaid)
     info[areaid] = nil
-    WorldHelper:stopBodyEffect(pos, BaseConstant.BODY_EFFECT.LIGHT37)
+    local particleid = self:getSkill1Particleid()
+    WorldHelper:stopBodyEffect(pos, particleid)
     -- 眩晕迟缓效果
     ActorHelper:playHurt(objid)
     ActorHelper:addBuff(objid, MyMap.BUFF.DIZZY, 1, 20) -- 眩晕
@@ -244,72 +247,87 @@ function Zhangliang:enterSkill1 (objid, areaid)
   end
 end
 
+function Zhangliang:getSkill1Particleid ()
+  local teamid = ActorHelper:getTeam(self.objid)
+  local particleid
+  if (teamid == 1) then
+    particleid = BaseConstant.BODY_EFFECT.LIGHT37
+  elseif (itemid == 2) then
+    particleid = BaseConstant.BODY_EFFECT.LIGHT36
+  else
+    particleid = BaseConstant.BODY_EFFECT.LIGHT38
+  end
+  return particleid
+end
+
 -- 使用二技能
-function Zhangliang:useSkill2 (objid)
+function Zhangliang:useSkill2 ()
   local innerSize, outerSize = 4, 6
-  local player = PlayerHelper:getPlayer(objid)
-  local pos = ActorHelper:getMyPosition(objid)
+  local player = PlayerHelper:getPlayer(self.objid)
+  local pos = ActorHelper:getMyPosition(self.objid)
   pos.y = 7
-  local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
+  local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, self.objid, false)
   if (objids and #objids == 0) then
-    objids = ActorHelper:getAllCreaturesArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
+    objids = ActorHelper:getAllCreaturesArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, self.objid, false)
   end
   if (not(objids) or #objids == 0) then -- 外圈没有找到目标
-    self:generateSkill2(objid, pos, 0, innerSize)
+    local angle = ActorHelper:getFaceYaw(self.objid)
+    self:generateSkill2(pos, angle, innerSize)
   else -- 外圈找到目标
     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
     local targetPos = ActorHelper:getMyPosition(nearestObjid)
     local angle = MathHelper:getActorFaceYaw(MyVector3:new(pos, targetPos))
     if (distance <= innerSize) then -- 在技能范围内
-      self:generateSkill2(objid, pos, angle, distance)
+      self:generateSkill2(pos, angle, distance)
     else -- 不在范围内
-      self:generateSkill2(objid, pos, angle, innerSize)
+      self:generateSkill2(pos, angle, innerSize)
     end
     player:lookAt(nearestObjid)
   end
 end
 
 -- 清除效果
-function Zhangliang:clearSkill2 (objid, info)
+function Zhangliang:clearSkill2 (info)
   if (info.areaid) then
     -- MySkillHelper:delActiveArea(info.areaid)
-    WorldHelper:stopBodyEffect(info.pos, BaseConstant.BODY_EFFECT.PROMPT14)
+    local particleid = self:getSkill2Particleid()
+    WorldHelper:stopBodyEffect(info.pos, particleid)
     info.areaid = nil
-    local t = objid .. self.name .. 2
+    local t = self.objid .. self.name .. 2
     TimeHelper:delFnFastRuns(t)
     TimeHelper:delFnContinueRuns(t)
   end
 end
 
 -- 生成
-function Zhangliang:generateSkill2 (objid, pos, angle, distance)
-  local player = PlayerHelper:getPlayer(objid)
+function Zhangliang:generateSkill2 (pos, angle, distance)
+  local player = PlayerHelper:getPlayer(self.objid)
   local dstPos = MathHelper:getDistancePosition(pos, angle, distance)
-  local info = MySkillHelper:getSkillInfo(objid, 2)
-  self:clearSkill2(objid, info)
+  local info = MySkillHelper:getSkillInfo(self.objid, 2)
+  self:clearSkill2(info)
   local posBeg = MyPosition:new(dstPos.x - 2, 7, dstPos.z - 2)
   local posEnd = MyPosition:new(dstPos.x + 1, 9, dstPos.z + 1)
   local areaid = AreaHelper:createAreaRectByRange(posBeg, posEnd)
-  -- MySkillHelper:addActiveArea(objid, 2, areaid)
   info.areaid = areaid
   info.pos = dstPos
-  WorldHelper:playBodyEffect(dstPos, BaseConstant.BODY_EFFECT.PROMPT14, 3)
+  local particleid = self:getSkill2Particleid()
+  WorldHelper:playBodyEffect(dstPos, particleid, 3)
   -- 一定时间后清除
-  local t = objid .. self.name .. 2
+  local t = self.objid .. self.name .. 2
   TimeHelper:callFnFastRuns(function ()
-    self:clearSkill2(objid, info)
+    self:clearSkill2(info)
   end, 4, t)
   local idx = 1
   TimeHelper:callFnContinueRuns(function ()
     if (idx % 10 == 0) then
-      local objids = AreaHelper:getAllPlayersInAreaId(areaid, objid, false)
+      local objids = AreaHelper:getAllPlayersInAreaId(areaid, self.objid, false)
       if (objids and #objids == 0) then
-        objids = AreaHelper:getAllCreaturesInAreaId(areaid, objid, false)
+        objids = AreaHelper:getAllCreaturesInAreaId(areaid, self.objid, false)
       end
       if (objids and #objids > 0) then
         local nearestObjid = ActorHelper:getNearestActor(objids, dstPos)
         local attPos = MyPosition:new(dstPos.x, dstPos.y + 2, dstPos.z)
-        local projectileid = WorldHelper:spawnProjectileByPos(objid, 
+        local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
           MyMap.ITEM.AMMUNITION1, attPos, attPos, 0)
         MySkillHelper:continueAttack(projectileid, nearestObjid, 4, function ()
           ActorHelper:playHurt(nearestObjid)
@@ -318,4 +336,38 @@ function Zhangliang:generateSkill2 (objid, pos, angle, distance)
     end
     idx = idx + 1
   end, 4, t)
+end
+
+function Zhangliang:getSkill2Particleid ()
+  local teamid = ActorHelper:getTeam(self.objid)
+  local particleid
+  if (teamid == 1) then
+    particleid = BaseConstant.BODY_EFFECT.PROMPT10
+  elseif (itemid == 2) then
+    particleid = BaseConstant.BODY_EFFECT.PROMPT11
+  else
+    particleid = BaseConstant.BODY_EFFECT.PROMPT9
+  end
+  return particleid
+end
+
+-- 使用三技能
+function Zhangliang:useSkill3 ()
+  local innerSize = 4
+  local player = PlayerHelper:getPlayer(self.objid)
+  local pos = player:getMyPosition()
+  pos.y = 7
+  local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = innerSize, y = 3, z = innerSize }, self.objid, false)
+  if (not(objids) or #objids == 0) then -- 内圈没有找到目标
+    ChatHelper:sendSpacedMsg(objid, self.name .. 'skill3', 2, '附近无目标')
+  else -- 内圈找到目标
+    local nearestObjid = ActorHelper:getNearestActor(objids, pos)
+    self:generateSkill3(nearestObjid)
+    player:lookAt(nearestObjid)
+  end
+end
+
+-- 生成
+function Zhangliang:generateSkill3 (toobjid)
+  ActorHelper:addBuff(toobjid, MyMap.BUFF.CONTROL, 1, 20 * 3) -- 被掌控
 end

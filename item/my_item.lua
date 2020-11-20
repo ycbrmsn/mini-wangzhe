@@ -81,3 +81,24 @@ end
 function Yanlingmingshu:useItem (objid)
   -- body
 end
+
+-- 言灵掌控
+Yanlingzhangkong = BaseItem:new({
+  id = MyMap.ITEM.YANLINGZHANGKONG,
+  cd = 20,
+  name = 'zhangliang',
+})
+
+function Yanlingzhangkong:selectItem (objid, index)
+  local hero = MySkillHelper:getHero(objid)
+  if (not(hero) or hero.name ~= self.name) then
+    ChatHelper:sendSpacedMsg(objid, self.name, 2, '你无法使用此技能')
+  else
+    ItemHelper:recordUseSkill(objid, self.id, self.cd)
+    hero:useSkill3(objid)
+  end
+end
+
+function Yanlingzhangkong:useItem (objid)
+  -- body
+end

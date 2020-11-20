@@ -20,6 +20,7 @@ MyPlayerHelper = {
       msgMap = { present = '一张迷惑符' }
     }, -- 海绵海棠
   },
+  initPos = MyPosition:new(5, 48, 3),
 }
 
 function MyPlayerHelper:diffPersonDiffPresents (objid)
@@ -44,7 +45,11 @@ function MyPlayerHelper:playerEnterGame (objid)
   PlayerHelper:playerEnterGame(objid)
   MyStoryHelper:playerEnterGame(objid)
   -- body
+  local player = PlayerHelper:getPlayer(objid)
+  -- player:setMyPosition(self.initPos)
   PlayerHelper:setJumpPower(objid, 0) -- 跳跃力为0
+  
+  BackpackHelper:gainItem(objid, MyMap.ITEM.ZHANGLIANG, 1) -- 变身张良
   TimeHelper:callFnAfterSecond(function ()
     AdjustCamera:useItem(objid)
   end, 1)

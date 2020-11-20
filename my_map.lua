@@ -20,6 +20,7 @@ MyMap = {
     ZHANGLIANG = 50000001, -- 变身张良
     DIZZY = 50000002, -- 眩晕
     ATTACK = 50000003, -- 攻击
+    CONTROL = 50000004, -- 被掌控
   },
   CUSTOM = {
     
