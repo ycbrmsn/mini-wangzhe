@@ -41,4 +41,5 @@ function ZhangliangBuff:addBuff (objid)
   Zhangliang:new(objid)
   BackpackHelper:gainItem(objid, MyMap.ITEM.YANLINGBILEI, 1)
   BackpackHelper:gainItem(objid, MyMap.ITEM.YANLINGMINGSHU, 1)
+  BackpackHelper:gainItem(objid, MyMap.ITEM.YANLINGZHANGKONG, 1)
 end

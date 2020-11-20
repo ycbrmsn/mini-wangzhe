@@ -7,6 +7,7 @@ MyMap = {
     ADJUST_CAMERA = 4097, -- 调整视角
     YANLINGBILEI = 4101, -- 言灵壁垒
     YANLINGMINGSHU = 4102, -- 言灵命数
+    YANLINGZHANGKONG = 4103, -- 言灵掌控
   },
   ACTOR = {
     
