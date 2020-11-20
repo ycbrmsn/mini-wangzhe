@@ -38,6 +38,7 @@ ActorHelper = {
   actormotions = {}, -- 生物及其当前对应的状态 { objid -> motion }
   initActorObjids = {}, -- 初始化生物时，每个玩家附近的所有生物的id数组 { time -> objids }
   buffs = {}, -- 自定义buff { buffid -> buff }
+  builds = {}, -- 自定义建筑 { buildid -> build }
   enableMoveInfo = {}, -- 能否移动信息 { objid -> { 不能移动原因（没有原因则可移动） } }
 }
 
@@ -83,10 +84,25 @@ function ActorHelper:registerBuff (buff)
   self.buffs[buff.id] = buff
 end
 
+-- 注册build
+function ActorHelper:registerBuild (build)
+  self.builds[build.id] = build
+end
+
 -- 获取自定义buff
 function ActorHelper:getBuff (buffid)
   for k, v in pairs(self.buffs) do
     if (k == buffid) then
+      return v
+    end
+  end
+  return nil
+end
+
+-- 获取自定义build
+function ActorHelper:getBuild (buildid)
+  for k, v in pairs(self.builds) do
+    if (k == buildid) then
       return v
     end
   end
