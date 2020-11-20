@@ -191,12 +191,12 @@ function Zhangliang:useSkill1 (objid)
     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
     local targetPos = ActorHelper:getMyPosition(nearestObjid)
     local angle = MathHelper:getActorFaceYaw(MyVector3:new(pos, targetPos))
-    player:lookAt(nearestObjid)
     if (distance <= innerSize) then -- 在技能范围内
       self:generateSkill1(objid, pos, angle, distance)
     else -- 不在范围内
       self:generateSkill1(objid, pos, angle, innerSize)
     end
+    player:lookAt(nearestObjid)
   end
 end
 
@@ -255,61 +255,67 @@ function Zhangliang:useSkill2 (objid)
     objids = ActorHelper:getAllCreaturesArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
   end
   if (not(objids) or #objids == 0) then -- 外圈没有找到目标
-    self:generateSkill2(objid, innerSize)
+    self:generateSkill2(objid, pos, 0, innerSize)
   else -- 外圈找到目标
     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
     local targetPos = ActorHelper:getMyPosition(nearestObjid)
-    player:lookAt(nearestObjid)
+    local angle = MathHelper:getActorFaceYaw(MyVector3:new(pos, targetPos))
     if (distance <= innerSize) then -- 在技能范围内
-      self:generateSkill2(objid, distance)
+      self:generateSkill2(objid, pos, angle, distance)
     else -- 不在范围内
-      self:generateSkill2(objid, innerSize)
+      self:generateSkill2(objid, pos, angle, innerSize)
     end
+    player:lookAt(nearestObjid)
   end
 end
 
 -- 清除效果
 function Zhangliang:clearSkill2 (objid, info)
   if (info.areaid) then
-    MySkillHelper:delActiveArea(info.areaid)
+    -- MySkillHelper:delActiveArea(info.areaid)
     WorldHelper:stopBodyEffect(info.pos, BaseConstant.BODY_EFFECT.PROMPT14)
     info.areaid = nil
-    TimeHelper:delFnFastRuns(objid .. self.name .. 2)
+    local t = objid .. self.name .. 2
+    TimeHelper:delFnFastRuns(t)
+    TimeHelper:delFnContinueRuns(t)
   end
 end
 
 -- 生成
-function Zhangliang:generateSkill2 (objid, distance)
+function Zhangliang:generateSkill2 (objid, pos, angle, distance)
   local player = PlayerHelper:getPlayer(objid)
-  local pos = player:getDistancePosition(distance)
+  local dstPos = MathHelper:getDistancePosition(pos, angle, distance)
   local info = MySkillHelper:getSkillInfo(objid, 2)
   self:clearSkill2(objid, info)
-  local posBeg = MyPosition:new(pos.x - 2, 7, pos.z - 2)
-  local posEnd = MyPosition:new(pos.x + 1, 9, pos.z + 1)
+  local posBeg = MyPosition:new(dstPos.x - 2, 7, dstPos.z - 2)
+  local posEnd = MyPosition:new(dstPos.x + 1, 9, dstPos.z + 1)
   local areaid = AreaHelper:createAreaRectByRange(posBeg, posEnd)
-  MySkillHelper:addActiveArea(objid, 2, areaid)
+  -- MySkillHelper:addActiveArea(objid, 2, areaid)
   info.areaid = areaid
-  info.pos = pos
-  WorldHelper:playBodyEffect(pos, BaseConstant.BODY_EFFECT.PROMPT14, 3)
+  info.pos = dstPos
+  WorldHelper:playBodyEffect(dstPos, BaseConstant.BODY_EFFECT.PROMPT14, 3)
   -- 一定时间后清除
+  local t = objid .. self.name .. 2
   TimeHelper:callFnFastRuns(function ()
     self:clearSkill2(objid, info)
-  end, 4, objid .. self.name .. 2)
-end
-
--- 敌方进入言灵壁垒区域
-function Zhangliang:enterSkill2 (objid, areaid)
-  -- if (not(ActorHelper:isTheSameTeamActor(objid, skillObj))) then -- 不同队伍
-  if (true) then
-    local info = MySkillHelper:getSkillInfo(self.objid, 1)
-    local pos = info[areaid].pos
-    local level = info[areaid].level
-    MySkillHelper:delActiveArea(areaid)
-    info[areaid] = nil
-    WorldHelper:stopBodyEffect(pos, BaseConstant.BODY_EFFECT.PROMPT14)
-    -- 眩晕迟缓效果
-    ActorHelper:playHurt(objid)
-    ActorHelper:addBuff(objid, MyMap.BUFF.DIZZY, 1, 20) -- 眩晕
-    -- 根据level与玩家属性计算伤害
-  end
+  end, 4, t)
+  local idx = 1
+  TimeHelper:callFnContinueRuns(function ()
+    if (idx % 10 == 0) then
+      local objids = AreaHelper:getAllPlayersInAreaId(areaid, objid, false)
+      if (objids and #objids == 0) then
+        objids = AreaHelper:getAllCreaturesInAreaId(areaid, objid, false)
+      end
+      if (objids and #objids > 0) then
+        local nearestObjid = ActorHelper:getNearestActor(objids, dstPos)
+        local attPos = MyPosition:new(dstPos.x, dstPos.y + 2, dstPos.z)
+        local projectileid = WorldHelper:spawnProjectileByPos(objid, 
+          MyMap.ITEM.AMMUNITION1, attPos, attPos, 0)
+        MySkillHelper:continueAttack(projectileid, nearestObjid, 4, function ()
+          ActorHelper:playHurt(nearestObjid)
+        end)
+      end
+    end
+    idx = idx + 1
+  end, 4, t)
 end
