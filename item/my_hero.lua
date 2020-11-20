@@ -122,23 +122,30 @@ function BaseHero:remoteAtt2 (objids, pos, dim)
   local player = PlayerHelper:getPlayer(self.objid)
   local pos1, pos2 = player:getDistancePosition(1)
   pos1.y = pos1.y + 1
+  local toobjid, callback
   if (not(objids) or #objids == 0) then -- 没有目标
     pos2 = player:getDistancePosition(self.remoteSize)
     pos2.y = pos2.y + 1
+    toobjid = pos2
   else
     local nearestObjid = ActorHelper:getNearestActor(objids, pos)
     player:lookAt(nearestObjid)
-    pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
+    -- pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
+    toobjid = nearestObjid
+    callback = function ()
+      ActorHelper:playHurt(nearestObjid)
+    end
   end
   local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
-    12051, pos1, pos2, 50)
+    MyMap.ITEM.AMMUNITION1, pos1, pos1, 0)
+  MySkillHelper:continueAttack(projectileid, toobjid, 4, callback)
   -- ActorHelper:playBodyEffect(projectileid, BaseConstant.BODY_EFFECT.PARTICLE24)
 end
 
 -- 张良
 Zhangliang = BaseHero:new({
   name = 'zhangliang',
-  -- attCategory = 2, -- 远程攻击
+  attCategory = 2, -- 远程攻击
   phyAtt = 5, -- 物攻
   magAtt = 10, -- 法攻
   maxHp = 1000, -- 最大生命
@@ -170,6 +177,7 @@ end
 -- 使用一技能
 function Zhangliang:useSkill1 (objid)
   local innerSize, outerSize = 4, 6
+  local player = PlayerHelper:getPlayer(objid)
   local pos = ActorHelper:getMyPosition(objid)
   pos.y = 7
   local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
@@ -183,7 +191,7 @@ function Zhangliang:useSkill1 (objid)
     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
     local targetPos = ActorHelper:getMyPosition(nearestObjid)
     local angle = MathHelper:getActorFaceYaw(MyVector3:new(pos, targetPos))
-    ActorHelper:lookAt(objid, nearestObjid)
+    player:lookAt(nearestObjid)
     if (distance <= innerSize) then -- 在技能范围内
       self:generateSkill1(objid, pos, angle, distance)
     else -- 不在范围内
@@ -239,6 +247,7 @@ end
 -- 使用二技能
 function Zhangliang:useSkill2 (objid)
   local innerSize, outerSize = 4, 6
+  local player = PlayerHelper:getPlayer(objid)
   local pos = ActorHelper:getMyPosition(objid)
   pos.y = 7
   local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
@@ -250,7 +259,7 @@ function Zhangliang:useSkill2 (objid)
   else -- 外圈找到目标
     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
     local targetPos = ActorHelper:getMyPosition(nearestObjid)
-    ActorHelper:lookAt(objid, nearestObjid)
+    player:lookAt(nearestObjid)
     if (distance <= innerSize) then -- 在技能范围内
       self:generateSkill2(objid, distance)
     else -- 不在范围内

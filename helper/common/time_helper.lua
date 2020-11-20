@@ -348,7 +348,7 @@ end
 function TimeHelper:delFnFastRuns (t)
   local isDel = false
   for i = #self.fnFastRuns, 1, -1 do
-    if (self.fnFastRuns[i][3] and self.fnFastRuns[i][3] == t) then
+    if (self.fnFastRuns[i] and self.fnFastRuns[i][3] and self.fnFastRuns[i][3] == t) then
       -- table.remove(self.fnFastRuns, i)
       self.fnFastRuns[i] = false
       isDel = true
@@ -382,6 +382,7 @@ function TimeHelper:callFnFastRuns (f, second, t)
   second = second or 1
   t = t or TimeHelper:getGlobalIndex()
   self:addFnFastRuns(f, second, t)
+  return t
 end
 
 -- 添加方法
@@ -427,6 +428,7 @@ function TimeHelper:callFnContinueRuns (f, second, t, p)
   second = second or 1
   t = t or TimeHelper:getGlobalIndex()
   self:addFnContinueRuns(f, second, t, p)
+  return t
 end
 
 function TimeHelper:doPerSecond (second)

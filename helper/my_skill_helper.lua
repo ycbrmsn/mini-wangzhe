@@ -73,78 +73,46 @@ function MySkillHelper:enterActiveArea (objid, areaid)
   end
 end
 
--- -- 施展言灵壁垒
--- function MySkillHelper:useYanlingbilei (objid, level)
---   local innerSize, outerSize = 4, 6
---   local pos = ActorHelper:getMyPosition(objid)
---   pos.y = 7
---   local objids = ActorHelper:getAllPlayersArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
---   if (objids and #objids == 0) then
---     objids = ActorHelper:getAllCreaturesArroundPos(pos, { x = outerSize, y = 3, z = outerSize }, objid, false)
---   end
---   if (not(objids) or #objids == 0) then -- 外圈没有找到目标
---     local angle = ActorHelper:getFaceYaw(objid)
---     MySkillHelper:generateYanlingbilei(objid, pos, angle, innerSize, level)
---   else -- 外圈找到目标
---     local nearestObjid, distance = ActorHelper:getNearestActor(objids, pos)
---     local targetPos = ActorHelper:getMyPosition(nearestObjid)
---     local angle = MathHelper:getActorFaceYaw(MyVector3:new(pos, targetPos))
---     ActorHelper:lookAt(objid, nearestObjid)
---     if (distance <= innerSize) then -- 在技能范围内
---       MySkillHelper:generateYanlingbilei(objid, pos, angle, distance, level)
---     else -- 不在范围内
---       -- local dstPos = MathHelper:getPos2PosInLineDistancePosition(pos, targetPos, innerSize)
---       -- print(dstPos)
---       -- ActorHelper:tryMoveToPos(objid, dstPos.x, dstPos.y + 1, dstPos.z)
---       -- LogHelper:debug('寻路')
---       -- ChatHelper:sendSpacedMsg(objid, '言灵壁垒', 2, '目标不在技能范围内')
---       MySkillHelper:generateYanlingbilei(objid, pos, angle, innerSize, level)
---     end
---   end
--- end
+-- 投掷物攻击
+function MySkillHelper:attack (objid, toobjid, speed)
+  speed = speed or 5
+  local step = speed / 20
+  local collideDistance = 0.5
+  local pos, toPos = ActorHelper:getMyPosition(objid)
+  if (type(toobjid) == 'table') then -- 固定位置
+    toPos = toobjid
+  else -- 生物
+    local build = ActorHelper:getBuild(toobjid)
+    if (build) then -- 是建筑
 
--- -- 清除效果
--- function MySkillHelper:clearYanlingbilei (objid, info)
---   for areaid, v in pairs(info) do
---     MySkillHelper:delActiveArea(areaid)
---     WorldHelper:stopBodyEffect(v.pos, BaseConstant.BODY_EFFECT.LIGHT37)
---     info[areaid] = nil
---   end
---   -- MySkillHelper:setSkillInfo(objid, 'zhangliang', 1, {})
---   TimeHelper:delFnFastRuns(objid .. 'zhangliang1')
--- end
+    else -- 不是建筑
+      toPos = ActorHelper:getEyeHeightPosition(toobjid)
+    end
+  end
+  local tempPos = MyPosition:new(toPos.x, pos.y, toPos.z)
+  local distance = MathHelper:getDistance(pos, tempPos) -- 水平的距离
+  if (distance <= collideDistance) then
+    return true
+  else
+    distance = distance - step
+    local dstPos = MathHelper:getPos2PosInLineDistancePosition(pos, toPos, distance)
+    local dh = (toPos.y - pos.y) / (distance / step)
+    dstPos.y = pos.y + dh
+    ActorHelper:setMyPosition(objid, dstPos)
+    return false
+  end
+end
 
--- -- 生成
--- function MySkillHelper:generateYanlingbilei (objid, pos, angle, distance, level)
---   local positions = MathHelper:getRegularDistancePositions(pos, angle, distance, 3)
---   local info = MySkillHelper:getSkillInfo(objid, 'zhangliang', 1)
---   MySkillHelper:clearYanlingbilei(objid, info)
---   for i, v in ipairs(positions) do
---     local areaid = AreaHelper:createAreaRect(v, { x = 0, y = 0, z = 0 })
---     MySkillHelper:addActiveArea(objid, 'zhangliang', 1, areaid)
---     info[areaid] = { pos = v, level = level }
---     WorldHelper:playBodyEffect(v, BaseConstant.BODY_EFFECT.LIGHT37)
---   end
---   -- 一定时间后清除
---   TimeHelper:callFnFastRuns(function ()
---     MySkillHelper:clearYanlingbilei(objid, info)
---   end, 3, objid .. 'zhangliang1')
--- end
-
--- -- 进入言灵壁垒区域
--- function MySkillHelper:enterYanlingbilei (objid, areaid)
---   local skillObj = self.activeAreas[areaid].objid
---   -- if (not(ActorHelper:isTheSameTeamActor(objid, skillObj))) then -- 不同队伍
---   if (true) then
---     local info = MySkillHelper:getSkillInfo(skillObj, 'zhangliang', 1)
---     local pos = info[areaid].pos
---     local level = info[areaid].level
---     MySkillHelper:delActiveArea(areaid)
---     info[areaid] = nil
---     WorldHelper:stopBodyEffect(pos, BaseConstant.BODY_EFFECT.LIGHT37)
---     -- 眩晕迟缓效果
---     ActorHelper:playHurt(objid)
---     ActorHelper:addBuff(objid, MyMap.BUFF.DIZZY, 1, 20) -- 眩晕
---     -- 根据level与玩家属性计算伤害
---   end
--- end
+-- 攻击
+function MySkillHelper:continueAttack (objid, toobjid, speed, callback)
+  local t = objid .. 'remoteAtt'
+  TimeHelper:callFnContinueRuns(function ()
+    if (MySkillHelper:attack(objid, toobjid, speed)) then
+      TimeHelper:delFnContinueRuns(t)
+      WorldHelper:despawnActor(objid)
+      if (callback) then
+        callback()
+      end
+    end
+  end, -1, t)
+end

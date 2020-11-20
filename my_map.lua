@@ -9,6 +9,9 @@ MyMap = {
     YANLINGMINGSHU = 4102, -- 言灵命数
     YANLINGZHANGKONG = 4103, -- 言灵掌控
     ZHANGLIANG = 4104, -- 变身张良
+    AMMUNITION1 = 4105, -- 英雄投掷物
+    AMMUNITION2 = 4106, -- 小兵投掷物
+    AMMUNITION3 = 4107, -- 建筑投掷物
   },
   ACTOR = {
     
