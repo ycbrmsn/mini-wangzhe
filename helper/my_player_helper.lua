@@ -48,6 +48,8 @@ function MyPlayerHelper:playerEnterGame (objid)
   local player = PlayerHelper:getPlayer(objid)
   -- player:setMyPosition(self.initPos)
   PlayerHelper:setJumpPower(objid, 0) -- 跳跃力为0
+  PlayerHelper:setWalkSpeed(objid, 8) -- 移动速度8
+  PlayerHelper:setRunSpeed(objid, 6) -- 奔跑速度6
   
   BackpackHelper:gainItem(objid, MyMap.ITEM.ZHANGLIANG, 1) -- 变身张良
   TimeHelper:callFnAfterSecond(function ()

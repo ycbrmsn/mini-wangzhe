@@ -307,6 +307,11 @@ function PlayerHelper:setWalkSpeed (objid, speed)
   return self:setAttr(objid, PLAYERATTR.WALK_SPEED, speed)
 end
 
+-- 奔跑速度
+function PlayerHelper:setRunSpeed (objid, speed)
+  return self:setAttr(objid, PLAYERATTR.RUN_SPEED, speed)
+end
+
 -- 游泳速度
 function PlayerHelper:setSwimSpeed (objid, speed)
   return self:setAttr(objid, PLAYERATTR.SWIN_SPEED, speed)
