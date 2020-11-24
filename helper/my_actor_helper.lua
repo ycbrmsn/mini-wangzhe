@@ -23,7 +23,16 @@ end
 
 -- 事件
 
--- actor进入区域
+-- 生物被创建
+function MyActorHelper:actorCreate (objid, toobjid)
+  ActorHelper:actorCreate(objid, toobjid)
+  MyStoryHelper:actorCreate(objid, toobjid)
+  -- body
+  ActorHelper:setnickname(objid, '哈哈')
+  ActorHelper:shownickname(objid, true)
+end
+
+-- 生物进入区域
 function MyActorHelper:actorEnterArea (objid, areaid)
   ActorHelper:actorEnterArea(objid, areaid)
   MyStoryHelper:actorEnterArea(objid, areaid)
@@ -32,7 +41,7 @@ function MyActorHelper:actorEnterArea (objid, areaid)
   end
 end
 
--- actor离开区域
+-- 生物离开区域
 function MyActorHelper:actorLeaveArea (objid, areaid)
   ActorHelper:actorLeaveArea(objid, areaid)
   MyStoryHelper:actorLeaveArea(objid, areaid)

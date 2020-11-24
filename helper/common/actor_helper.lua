@@ -891,6 +891,11 @@ end
 
 -- 事件
 
+-- 生物被创建
+function ActorHelper:actorCreate (objid, toobjid)
+  -- body
+end
+
 -- actor进入区域
 function ActorHelper:actorEnterArea (objid, areaid)
   local myActor = self:getActor(objid)
@@ -1314,4 +1319,16 @@ function ActorHelper:getBodySize (objid)
   return CommonHelper:callTwoResultMethod(function (p)
     return Actor:getBodySize(objid)
   end, '获取身体尺寸', 'objid=', objid)
+end
+
+function ActorHelper:shownickname (objid, bshow)
+  return CommonHelper:callIsSuccessMethod(function (p)
+    return Actor:shownickname(objid, bshow)
+  end, '设置昵称显示', 'objid=', objid, ',bshow=', bshow)
+end
+
+function ActorHelper:setnickname (objid, nickname)
+  return CommonHelper:callIsSuccessMethod(function (p)
+    return Actor:setnickname(objid, nickname)
+  end, '设置昵称', 'objid=', objid, ',nickname=', nickname)
 end

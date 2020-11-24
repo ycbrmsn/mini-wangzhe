@@ -14,9 +14,17 @@ MyMap = {
     AMMUNITION3 = 4107, -- 建筑投掷物
   },
   ACTOR = {
-    
+    SOLDIER11 = 3, -- 红方近战兵
+    SOLDIER12 = 4, -- 红方远程兵
+    SOLDIER13 = 5, -- 红方攻城兵
+    SOLDIER14 = 6, -- 红方超级兵
+    SOLDIER21 = 7, -- 蓝方近战兵
+    SOLDIER22 = 8, -- 蓝方远程兵
+    SOLDIER23 = 9, -- 蓝方攻城兵
+    SOLDIER24 = 10, -- 蓝方超级兵
   },
   BUFF = {
+    CONTINUE = 999, -- 继续探险
     ZHANGLIANG = 50000001, -- 变身张良
     DIZZY = 50000002, -- 眩晕
     ATTACK = 50000003, -- 攻击

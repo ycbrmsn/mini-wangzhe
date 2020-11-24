@@ -1,5 +1,12 @@
 -- 生物事件
 
+-- eventobjid, toobjid
+local actorCreate = function (event)
+  LogHelper:call(function ()
+    MyActorHelper:actorCreate(event.eventobjid, event.toobjid)
+  end)
+end
+
 -- eventobjid, areaid
 local actorEnterArea = function (event)
   local objid = event['eventobjid']
@@ -146,6 +153,7 @@ local backpackItemTakeOut = function (event)
   end)
 end
 
+ScriptSupportEvent:registerEvent([=[Actor.Create]=], actorCreate) -- 生物被创建
 ScriptSupportEvent:registerEvent([=[Actor.AreaIn]=], actorEnterArea) -- 生物进入区域
 ScriptSupportEvent:registerEvent([=[Actor.AreaOut]=], actorLeaveArea) -- 生物离开区域
 ScriptSupportEvent:registerEvent([=[Actor.Collide]=], actorCollide) -- 生物发生碰撞
