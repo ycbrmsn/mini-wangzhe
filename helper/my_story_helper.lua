@@ -254,6 +254,11 @@ function MyStoryHelper:actorRemoveBuff (objid, buffid, bufflvl)
   -- body
 end
 
+-- 生物属性变化
+function MyStoryHelper:actorChangeAttr (objid, actorattr)
+  -- body
+end
+
 -- 容器内有道具取出
 function MyStoryHelper:backpackItemTakeOut (blockid, x, y, z, itemid, itemnum)
   -- body

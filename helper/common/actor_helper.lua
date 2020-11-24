@@ -1078,6 +1078,11 @@ function ActorHelper:actorRemoveBuff (objid, buffid, bufflvl)
   -- body
 end
 
+-- 生物属性变化
+function ActorHelper:actorChangeAttr (objid, actorattr)
+  -- body
+end
+
 -- 封装原始接口
 
 -- 向目标位置移动

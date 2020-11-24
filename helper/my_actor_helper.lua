@@ -98,3 +98,13 @@ function MyActorHelper:actorRemoveBuff (objid, buffid, bufflvl)
   MyStoryHelper:actorRemoveBuff(objid, buffid, bufflvl)
   -- body
 end
+
+-- 生物属性变化
+function MyActorHelper:actorChangeAttr (objid, actorattr)
+  ActorHelper:actorChangeAttr(objid, actorattr)
+  MyStoryHelper:actorChangeAttr(objid, actorattr)
+  -- body
+  if (actorattr == CREATUREATTR.CUR_HP) then
+    CreatureHelper:showHp(objid)
+  end
+end

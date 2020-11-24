@@ -87,6 +87,13 @@ local actorRemoveBuff = function (event)
   end)
 end
 
+-- eventobjid, actorattr
+local actorChangeAttr = function (event)
+  LogHelper:call(function ()
+    MyActorHelper:actorChangeAttr(event.eventobjid, event.actorattr)
+  end)
+end
+
 -- eventobjid, toobjid(opt), blockid(opt), x, y, z
 local actorProjectileHit = function (event)
   local projectileid, toobjid, blockid = event.eventobjid, event.toobjid, event.blockid
@@ -164,6 +171,7 @@ ScriptSupportEvent:registerEvent([=[Actor.BeHurt]=], actorBeHurt) -- 生物受�
 ScriptSupportEvent:registerEvent([=[Actor.Die]=], actorDie) -- 生物死亡
 ScriptSupportEvent:registerEvent([=[Actor.AddBuff]=], actorAddBuff) -- 生物获得状态效果
 ScriptSupportEvent:registerEvent([=[Actor.RemoveBuff]=], actorRemoveBuff) -- 生物失去状态效果
+ScriptSupportEvent:registerEvent([=[Actor.ChangeAttr]=], actorChangeAttr) -- 生物属性变化
 
 ScriptSupportEvent:registerEvent([=[Actor.Projectile.Hit]=], actorProjectileHit) -- 投掷物击中
 ScriptSupportEvent:registerEvent([=[Missile.Create]=], missileCreate) -- 投掷物被创建
