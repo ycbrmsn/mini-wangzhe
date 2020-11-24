@@ -28,8 +28,7 @@ function MyActorHelper:actorCreate (objid, toobjid)
   ActorHelper:actorCreate(objid, toobjid)
   MyStoryHelper:actorCreate(objid, toobjid)
   -- body
-  ActorHelper:setnickname(objid, '哈哈')
-  ActorHelper:shownickname(objid, true)
+  CreatureHelper:showHp(objid)
 end
 
 -- 生物进入区域

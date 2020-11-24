@@ -76,6 +76,24 @@ function CreatureHelper:resetHp (objid, hp)
   return CreatureHelper:setHp(objid, hp)
 end
 
+-- 显示血量
+function CreatureHelper:showHp (objid, num)
+  num = num or 5
+  local maxHp = CreatureHelper:getMaxHp(objid)
+  local hp = CreatureHelper:getHp(objid)
+  local ehp = math.floor(maxHp / num)
+  local hpStr = ''
+  for i = 0, num - 1 do
+    if (hp > ehp * i) then
+      hpStr = hpStr .. StringHelper.fillStr
+    else
+      hpStr = hpStr .. StringHelper.emptyStr
+    end
+  end
+  ActorHelper:setnickname(objid, '#R' .. hpStr)
+  ActorHelper:shownickname(objid, true)
+end
+
 -- 封装原始接口
 
 -- 设置生物AI是否生效
