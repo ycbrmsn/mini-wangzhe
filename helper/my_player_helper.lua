@@ -151,6 +151,15 @@ function MyPlayerHelper:playerRevive (objid, toobjid)
   PlayerHelper:playerRevive(objid, toobjid)
   MyStoryHelper:playerRevive(objid, toobjid)
   -- body
+  -- 恢复生命值与魔法值
+  local hero = MySkillHelper:getHero(objid)
+  if (hero) then
+    PlayerHelper:setMaxHp(objid, hero.maxHp)
+    PlayerHelper:setHp(objid, hero.maxHp)
+    PlayerHelper:setHunger(objid, hero.maxMp)
+  end
+  -- 删除复活保护
+  ActorHelper:removeBuff(objid, MyMap.BUFF.CONTINUE)
 end
 
 -- 玩家选择快捷栏

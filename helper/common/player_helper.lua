@@ -336,6 +336,11 @@ function PlayerHelper:setHunger (objid, hunger)
   return self:setAttr(objid, PLAYERATTR.CUR_HUNGER, hunger)
 end
 
+-- 获取最大饥饿度 2020-11-24 测试无效
+function PlayerHelper:getMaxHunger (objid)
+  return self:getAttr(objid, PLAYERATTR.MAX_HUNGER)
+end
+
 -- 设置最大饥饿度 2020-11-18 测试依然无效
 function PlayerHelper:setMaxHunger (objid, hunger)
   return self:setAttr(objid, PLAYERATTR.MAX_HUNGER, hunger)
