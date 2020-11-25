@@ -134,6 +134,7 @@ function BaseHero:remoteAtt2 (objids, pos, dim)
     toobjid = nearestObjid
     callback = function ()
       ActorHelper:playHurt(nearestObjid)
+      self:attackHit(nearestObjid)
     end
   end
   local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
@@ -142,11 +143,15 @@ function BaseHero:remoteAtt2 (objids, pos, dim)
   -- ActorHelper:playBodyEffect(projectileid, BaseConstant.BODY_EFFECT.PARTICLE24)
 end
 
+function BaseHero:attackHit (toobjid)
+  -- body
+end
+
 -- 张良
 Zhangliang = BaseHero:new({
   name = 'zhangliang',
   attCategory = 2, -- 远程攻击
-  phyAtt = 5, -- 物攻
+  phyAtt = 50, -- 物攻
   magAtt = 10, -- 法攻
   maxHp = 1000, -- 最大生命
   maxMp = 1000, -- 最大法力
@@ -172,6 +177,10 @@ function Zhangliang:init ()
   PlayerHelper:setHp(self.objid, self.maxHp)
   -- PlayerHelper:setMaxHunger(self.objid, self.maxMp)
   PlayerHelper:setFoodLevel(self.objid, self.maxMp)
+end
+
+function Zhangliang:attackHit (toobjid)
+  ActorHelper:damageActor(self.objid, toobjid, self.phyAtt)
 end
 
 -- 使用一技能
