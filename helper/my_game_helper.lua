@@ -90,6 +90,13 @@ end
 -- 世界时间到[n]秒
 function MyGameHelper:atSecond (second)
   GameHelper:atSecond(second)
+  -- body
+  -- 小兵前进
+  MyMonsterHelper:runSoldiers()
+  if (second == 10) then
+    Soldier11:newSolders(3)
+    Soldier21:newSolders(3)
+  end
 end
 
 -- 任意计时器发生变化
