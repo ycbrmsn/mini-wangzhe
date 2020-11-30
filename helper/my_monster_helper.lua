@@ -24,7 +24,7 @@ end
 function MyMonsterHelper:runSoldiers ()
   for i, soldiers in ipairs(self.soldiers) do
     for j, soldier in ipairs(soldiers) do
-      ActorHelper:tryMoveToPos(soldier.objid, soldier.toPos.x, soldier.toPos.y, soldier.toPos.z)
+      soldier:run()
     end
   end
   for i, v in ipairs(self.delSoldiers) do

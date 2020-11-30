@@ -182,8 +182,8 @@ end
 -- 获得两点连线上距离另一个点（第二个点）多远的位置，distance为正则位置可能在两点之间
 function MathHelper:getPos2PosInLineDistancePosition (pos1, pos2, distance)
   local myVector3 = MyVector3:new(pos2, pos1)
-  local angle = self:getActorFaceYaw(myVector3)
-  return self:getDistancePosition(pos2, angle, distance)
+  local angle = MathHelper:getActorFaceYaw(myVector3)
+  return MathHelper:getDistancePosition(pos2, angle, distance)
 end
 
 -- 两点之间的距离
@@ -194,7 +194,18 @@ function MathHelper:getDistance (pos1, pos2)
   if (type(pos2) == 'number') then
     pos2 = ActorHelper:getMyPosition(pos2)
   end
-  return self:getVector3Length(pos1.x - pos2.x, pos1.y - pos2.y, pos1.z - pos2.z)
+  return MathHelper:getVector3Length(pos1.x - pos2.x, pos1.y - pos2.y, pos1.z - pos2.z)
+end
+
+-- 两点水平方向上的距离
+function MathHelper:getDistanceV2 (pos1, pos2)
+  if (type(pos1) == 'number') then
+    pos1 = ActorHelper:getMyPosition(pos1)
+  end
+  if (type(pos2) == 'number') then
+    pos2 = ActorHelper:getMyPosition(pos2)
+  end
+  return MathHelper:getVector2Length(pos1.x - pos2.x, pos1.z - pos2.z)
 end
 
 -- 矩形区域范围posBeg, posEnd
