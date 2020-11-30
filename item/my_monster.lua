@@ -1,7 +1,7 @@
 -- 我的怪物
 BaseSoldier = {
   lookSize = 5, -- 视野
-  attSpace = 20, -- 攻击间隔
+  attSpace = 60, -- 攻击间隔
   attCd = 0, -- 攻击冷却
 }
 
@@ -54,7 +54,7 @@ function BaseSoldier:tryAttack (toobjid)
   if (distance > self.attSize) then -- 超出攻击距离
     local pos1 = ActorHelper:getMyPosition(self.objid)
     local pos2 = ActorHelper:getMyPosition(toobjid)
-    local dstPos = MathHelper:getPos2PosInLineDistancePosition(pos1, pos2, self.attSize)
+    local dstPos = MathHelper:getPos2PosInLineDistancePosition(pos1, pos2, self.attSize - 1)
     if (not(BlockHelper:isAirBlockOffset(dstPos))) then -- 不可以到达
       dstPos = pos2
     end
@@ -71,9 +71,9 @@ function BaseSoldier:attack (toobjid)
     ActorHelper:addBuff(self.objid, MyMap.BUFF.ATTACK, 1, math.ceil(self.attSpace / 5)) -- 攻击不可移动时长
     ActorHelper:playAct(self.objid, ActorHelper.ACT.ATTACK)
     if (self.attCategory == 1) then
-      self:meleeAtt()
+      self:meleeAtt(toobjid)
     else
-      self:remoteAtt()
+      self:remoteAtt(toobjid)
     end
   end
 end
@@ -86,18 +86,18 @@ function BaseSoldier:resetAttCd ()
   end, 0.05 * self.attSpace, self.objid .. 'resetAttCd')
 end
 
-function BaseSoldier:meleeAtt ()
+function BaseSoldier:meleeAtt (toobjid)
   -- body
 end
 
-function BaseSoldier:remoteAtt ()
+function BaseSoldier:remoteAtt (toobjid)
   -- body
 end
 
 -- 近战兵
 Soldier01 = BaseSoldier:new({
   attCategory = 1,
-  attSize = 1,
+  attSize = 2,
 })
 
 function Soldier01:new (o, actorid)
@@ -110,7 +110,7 @@ end
 -- 搜索敌人
 function Soldier01:searchEnemy ()
   local pos = ActorHelper:getMyPosition(self.objid)
-  local dim = { x = self.attSize, y = 3, z = self.attSize }
+  local dim = { x = self.lookSize, y = 3, z = self.lookSize }
   local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
   if (objids and #objids == 0) then
     objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
@@ -126,16 +126,19 @@ end
 function Soldier01:meleeAtt (toobjid)
   local dim = { x = 1, y = 3, z = 1 }
   ActorHelper:lookAt(self.objid, toobjid)
-  local targetPos = ActorHelper:getMyPosition(toobjid)
-  targetPos.y = targetPos.y + 1
-  local objids1 = ActorHelper:getAllPlayersArroundPos(targetPos, dim, self.objid, false)
-  local objids2 = ActorHelper:getAllCreaturesArroundPos(targetPos, dim, self.objid, false)
-  for i, v in ipairs(objids2) do
-    table.insert(objids1, v)
-  end
-  for i, v in ipairs(objids1) do
-    ActorHelper:playHurt(v)
-  end
+  -- local targetPos = ActorHelper:getMyPosition(toobjid)
+  -- targetPos.y = targetPos.y + 1
+  -- local objids1 = ActorHelper:getAllPlayersArroundPos(targetPos, dim, self.objid, false)
+  -- local objids2 = ActorHelper:getAllCreaturesArroundPos(targetPos, dim, self.objid, false)
+  -- for i, v in ipairs(objids2) do
+  --   table.insert(objids1, v)
+  -- end
+  TimeHelper:callFnFastRuns(function ()
+    -- for i, v in ipairs(objids1) do
+    --   ActorHelper:playHurt(v)
+    -- end
+    ActorHelper:playHurt(toobjid)
+  end, 0.3)
 end
 
 local o1 = {
