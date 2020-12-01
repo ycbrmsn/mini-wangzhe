@@ -92,6 +92,7 @@ function CreatureHelper:showHp (objid, num)
   end
   ActorHelper:setnickname(objid, '#R' .. hpStr)
   ActorHelper:shownickname(objid, true)
+  return hp, maxHp
 end
 
 -- 封装原始接口

@@ -3,6 +3,9 @@ BaseSoldier = {
   lookSize = 5, -- 视野
   attSpace = 60, -- 攻击间隔
   attCd = 0, -- 攻击冷却
+  maxHp = 1000, -- 最大生命
+  hp = 1000, -- 生命
+  att = 50, -- 攻击
 }
 
 function BaseSoldier:new (o)
@@ -17,9 +20,21 @@ function BaseSoldier:newSolders (num)
   if (objids and #objids > 0) then
     for i, objid in ipairs(objids) do
       CreatureHelper:closeAI(objid)
+      CreatureHelper:setMaxHp(objid, self.maxHp)
+      CreatureHelper:setHp(objid, self.hp)
       self:addSoldier(objid)
     end
   end
+end
+
+-- 重新生成小兵
+function BaseSoldier:renewSoldier ()
+  local objids = WorldHelper:spawnCreature(self.x, self.y, self.z, self.actorid, 1)
+  MyMonsterHelper:delSoldier(self.objid)
+  self.objid = objids[1]
+  CreatureHelper:setMaxHp(self.objid, self.maxHp)
+  CreatureHelper:setHp(self.objid, self.hp)
+  MyMonsterHelper:addSoldier(self)
 end
 
 -- 加入小兵
@@ -33,12 +48,26 @@ end
 -- 行动
 function BaseSoldier:run ()
   local hp = CreatureHelper:getHp(self.objid)
+  if (not(hp)) then -- 小兵不见了
+    local soldier = MyMonsterHelper:getSoldier(self.objid)
+    if (soldier and soldier.hp > 0) then -- 小兵还应该行动
+      self:renewSoldier()
+      hp = CreatureHelper:getHp(self.objid)
+    else -- 小兵已死
+      return
+    end
+  end
   if (hp and hp > 0) then
     local objid = self:searchEnemy()
     if (objid) then -- 找到敌人
       self:tryAttack(objid)
     else -- 无敌人
       ActorHelper:tryMoveToPos(self.objid, self.toPos.x, self.toPos.y, self.toPos.z)
+    end
+    -- 记录小兵的位置等数据
+    local x, y, z = ActorHelper:getPosition(self.objid)
+    if (x) then
+      self.x, self.y, self.z = x, y, z
     end
   end
 end
@@ -86,12 +115,22 @@ function BaseSoldier:resetAttCd ()
   end, 0.05 * self.attSpace, self.objid .. 'resetAttCd')
 end
 
+-- 近程攻击
 function BaseSoldier:meleeAtt (toobjid)
   -- body
 end
 
+-- 远程攻击
 function BaseSoldier:remoteAtt (toobjid)
   -- body
+end
+
+-- 生命变化
+function BaseSoldier:changeHp (hp)
+  self.hp = hp
+  if (hp <= 0) then
+    MyMonsterHelper:delSoldier(objid)
+  end
 end
 
 -- 近战兵
@@ -138,6 +177,7 @@ function Soldier01:meleeAtt (toobjid)
     --   ActorHelper:playHurt(v)
     -- end
     ActorHelper:playHurt(toobjid)
+    ActorHelper:damageActor(self.objid, toobjid, self.att)
   end, 0.3)
 end
 
