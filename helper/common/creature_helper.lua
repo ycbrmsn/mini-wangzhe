@@ -90,7 +90,7 @@ function CreatureHelper:showHp (objid, num)
       hpStr = hpStr .. StringHelper.emptyStr
     end
   end
-  ActorHelper:setnickname(objid, '#R' .. hpStr)
+  ActorHelper:setnickname(objid, '#G' .. hpStr)
   ActorHelper:shownickname(objid, true)
   return hp, maxHp
 end
