@@ -5,7 +5,7 @@ BaseSoldier = {
   attCd = 0, -- 攻击冷却
   maxHp = 1000, -- 最大生命
   hp = 1000, -- 生命
-  att = 50, -- 攻击
+  att = 100, -- 攻击
 }
 
 function BaseSoldier:new (o)
@@ -15,25 +15,29 @@ function BaseSoldier:new (o)
   return o
 end
 
+function BaseSoldier:init ()
+  CreatureHelper:closeAI(self.objid)
+  CreatureHelper:setMaxHp(self.objid, self.maxHp)
+  CreatureHelper:setHp(self.objid, self.hp)
+end
+
+-- 生成小兵
 function BaseSoldier:newSolders (num)
   local objids = WorldHelper:spawnCreature(self.initPos.x, self.initPos.y, self.initPos.z, self.actorid, num)
   if (objids and #objids > 0) then
     for i, objid in ipairs(objids) do
-      CreatureHelper:closeAI(objid)
-      CreatureHelper:setMaxHp(objid, self.maxHp)
-      CreatureHelper:setHp(objid, self.hp)
-      self:addSoldier(objid)
+      local soldier = self:addSoldier(objid)
+      soldier:init()
     end
   end
 end
 
--- 重新生成小兵
+-- 重新生成小兵(用于小兵因bug消失)
 function BaseSoldier:renewSoldier ()
   local objids = WorldHelper:spawnCreature(self.x, self.y, self.z, self.actorid, 1)
   MyMonsterHelper:delSoldier(self.objid)
   self.objid = objids[1]
-  CreatureHelper:setMaxHp(self.objid, self.maxHp)
-  CreatureHelper:setHp(self.objid, self.hp)
+  self:init()
   MyMonsterHelper:addSoldier(self)
 end
 
@@ -43,6 +47,7 @@ function BaseSoldier:addSoldier (objid)
   setmetatable(o, self)
   self.__index = self
   MyMonsterHelper:addSoldier(o)
+  return o
 end
 
 -- 行动
@@ -163,7 +168,7 @@ end
 
 -- 近战攻击
 function Soldier01:meleeAtt (toobjid)
-  local dim = { x = 1, y = 3, z = 1 }
+  -- local dim = { x = 1, y = 3, z = 1 }
   ActorHelper:lookAt(self.objid, toobjid)
   -- local targetPos = ActorHelper:getMyPosition(toobjid)
   -- targetPos.y = targetPos.y + 1
@@ -181,20 +186,122 @@ function Soldier01:meleeAtt (toobjid)
   end, 0.3)
 end
 
-local o1 = {
-  team = 1, -- 队伍
-  initPos = MyPosition:new(-40, 7, 0),
-  toPos = MyPosition:new(40, 7, 0),
-}
+-- 远程兵
+Soldier02 = BaseSoldier:new({
+  attCategory = 2,
+  attSize = 4,
+})
 
-local o2 = {
-  team = 2, -- 队伍
-  initPos = MyPosition:new(40, 7, 0),
-  toPos = MyPosition:new(-40, 7, 0),
-}
+function Soldier02:new (o, actorid)
+  o.actorid = actorid
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+-- 搜索敌人
+function Soldier02:searchEnemy ()
+  local pos = ActorHelper:getMyPosition(self.objid)
+  local dim = { x = self.lookSize, y = 3, z = self.lookSize }
+  local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+  if (objids and #objids == 0) then
+    objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  end
+  if (not(objids) or #objids == 0) then -- 没有目标
+    return nil
+  else
+    return ActorHelper:getNearestActor(objids, pos)
+  end
+end
+
+-- 远程攻击
+function Soldier02:remoteAtt (toobjid)
+  local pos1 = ActorHelper:getDistancePosition(self.objid, 1)
+  pos1.y = pos1.y + 1
+  ActorHelper:lookAt(self.objid, toobjid)
+    -- pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
+  local callback = function ()
+    ActorHelper:playHurt(toobjid)
+    ActorHelper:damageActor(self.objid, toobjid, self.att)
+  end
+  local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
+    MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
+  MySkillHelper:continueAttack(projectileid, toobjid, 4, callback)
+end
+
+-- 攻城车
+Soldier03 = BaseSoldier:new({
+  attCategory = 2,
+  attSize = 4,
+})
+
+function Soldier03:new (o, actorid)
+  o.actorid = actorid
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+-- 搜索敌人
+function Soldier03:searchEnemy ()
+  local pos = ActorHelper:getMyPosition(self.objid)
+  local dim = { x = self.lookSize, y = 3, z = self.lookSize }
+  local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+  if (objids and #objids == 0) then
+    objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  end
+  if (not(objids) or #objids == 0) then -- 没有目标
+    return nil
+  else
+    return ActorHelper:getNearestActor(objids, pos)
+  end
+end
+
+-- 远程攻击
+function Soldier03:remoteAtt (toobjid)
+  local pos1 = ActorHelper:getDistancePosition(self.objid, 1)
+  pos1.y = pos1.y + 1
+  ActorHelper:lookAt(self.objid, toobjid)
+    -- pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
+  local callback = function ()
+    ActorHelper:playHurt(toobjid)
+    ActorHelper:damageActor(self.objid, toobjid, self.att)
+  end
+  local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
+    MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
+  MySkillHelper:continueAttack(projectileid, toobjid, 4, callback)
+end
+
+local o1 = function ()
+  return {
+    team = 1, -- 队伍
+    initPos = MyPosition:new(-40, 7, 0),
+    toPos = MyPosition:new(40, 7, 0),
+  }
+end
+
+local o2 = function ()
+  return {
+    team = 2, -- 队伍
+    initPos = MyPosition:new(40, 7, 0),
+    toPos = MyPosition:new(-40, 7, 0),
+  }
+end
 
 -- 红方近战兵
-Soldier11 = Soldier01:new(o1, MyMap.ACTOR.SOLDIER11)
+Soldier11 = Soldier01:new(o1(), MyMap.ACTOR.SOLDIER11)
 
 -- 蓝方近战兵
-Soldier21 = Soldier01:new(o2, MyMap.ACTOR.SOLDIER21)
+Soldier21 = Soldier01:new(o2(), MyMap.ACTOR.SOLDIER21)
+
+-- 红方远程兵
+Soldier12 = Soldier02:new(o1(), MyMap.ACTOR.SOLDIER12)
+
+-- 蓝方远程兵
+Soldier22 = Soldier02:new(o2(), MyMap.ACTOR.SOLDIER22)
+
+-- 红方攻城车
+Soldier13 = Soldier03:new(o1(), MyMap.ACTOR.SOLDIER13)
+
+-- 蓝方攻城车
+Soldier23 = Soldier03:new(o2(), MyMap.ACTOR.SOLDIER23)
