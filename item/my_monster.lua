@@ -52,17 +52,17 @@ end
 
 -- 行动
 function BaseSoldier:run ()
-  local hp = CreatureHelper:getHp(self.objid)
-  if (not(hp)) then -- 小兵不见了
+  local pos = ActorHelper:getMyPosition(self.objid)
+  if (not(pos)) then -- 小兵不见了
     local soldier = MyMonsterHelper:getSoldier(self.objid)
     if (soldier and soldier.hp > 0) then -- 小兵还应该行动
       self:renewSoldier()
-      hp = CreatureHelper:getHp(self.objid)
+      pos = ActorHelper:getMyPosition(self.objid)
     else -- 小兵已死
       return
     end
   end
-  if (hp and hp > 0) then
+  if (pos) then
     local objid = self:searchEnemy()
     if (objid) then -- 找到敌人
       self:tryAttack(objid)
