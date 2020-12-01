@@ -584,7 +584,8 @@ function ActorHelper:damageActor (objid, toobjid, val, item)
     else -- 玩家可能会死亡，则检测玩家是否可被杀死
       local ableBeKilled = PlayerHelper:getPlayerEnableBeKilled(toobjid)
       if (ableBeKilled) then -- 能被杀死
-        ActorHelper:killSelf(toobjid)
+        PlayerHelper:setHp(toobjid, -1)
+        -- ActorHelper:killSelf(toobjid)
         if (isPlayer) then -- 攻击者是玩家
           MyPlayerHelper:playerDamageActor(objid, toobjid, val)
           MyPlayerHelper:playerDefeatActor(objid, toobjid, item)
@@ -611,6 +612,7 @@ function ActorHelper:damageActor (objid, toobjid, val, item)
     else -- 生物可能会死亡，则检测生物是否可被杀死
       local ableBeKilled = ActorHelper:getEnableBeKilledState(toobjid)
       if (ableBeKilled) then -- 能被杀死
+        CreatureHelper:setHp(toobjid, -1)
         ActorHelper:killSelf(toobjid)
         if (isPlayer) then -- 攻击者是玩家
           MyPlayerHelper:playerDamageActor(objid, toobjid, val)

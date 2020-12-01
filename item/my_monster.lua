@@ -129,7 +129,7 @@ end
 function BaseSoldier:changeHp (hp)
   self.hp = hp
   if (hp <= 0) then
-    MyMonsterHelper:delSoldier(objid)
+    MyMonsterHelper:delSoldier(self.objid)
   end
 end
 

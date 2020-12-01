@@ -94,8 +94,8 @@ function MyGameHelper:atSecond (second)
   -- 小兵前进
   MyMonsterHelper:runSoldiers()
   if (second == 2) then
-    Soldier11:newSolders(1)
-    Soldier21:newSolders(1)
+    Soldier11:newSolders(3)
+    Soldier21:newSolders(3)
   end
 end
 
