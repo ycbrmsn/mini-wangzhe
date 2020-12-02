@@ -274,7 +274,7 @@ end
 
 local o1 = function ()
   return {
-    team = 1, -- 队伍
+    teamid = 1, -- 队伍
     initPos = MyPosition:new(-40, 7, 0),
     toPos = MyPosition:new(40, 7, 0),
   }
@@ -282,7 +282,7 @@ end
 
 local o2 = function ()
   return {
-    team = 2, -- 队伍
+    teamid = 2, -- 队伍
     initPos = MyPosition:new(40, 7, 0),
     toPos = MyPosition:new(-40, 7, 0),
   }

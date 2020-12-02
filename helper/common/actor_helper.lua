@@ -441,8 +441,12 @@ end
 
 function ActorHelper:getTeamObjs (objids, objid, isTheSame)
   if (objids and objid) then
-    local arr, tid = {}
-    local teamid = self:getTeam(objid)
+    local arr, tid, teamid = {}
+    if (objid < 20) then -- 队伍id
+      teamid = objid
+    else -- 玩家/生物/投掷物id
+      teamid = self:getTeam(objid)
+    end
     for i, v in ipairs(objids) do
       tid = self:getTeam(v)
       if ((isTheSame and teamid == tid) or -- 同队
@@ -569,7 +573,12 @@ function ActorHelper:damageActor (objid, toobjid, val, item)
   if (val <= 0) then -- 伤害值无效
     return
   end
-  local isPlayer = ActorHelper:isPlayer(objid) -- 攻击者是否是玩家
+  local isPlayer -- 攻击者是否是玩家
+  if (not(objid)) then
+    isPlayer = false
+  else
+    isPlayer = ActorHelper:isPlayer(objid)
+  end
   if (ActorHelper:isPlayer(toobjid)) then -- 伤害玩家
     local hp = PlayerHelper:getHp(toobjid)
     if (hp <= 0) then -- 生物已经死亡
@@ -662,6 +671,27 @@ function ActorHelper:getNearestActor (objids, pos)
     end
   end
   return objid, tempDistance
+end
+
+-- 获取距离在半径内的生物 生物、距离、半径、是否是二维平面
+function ActorHelper:getRadiusActors (objids, pos, radius, isTwo)
+  local arr, distance = {}
+  if (objids and #objids > 0) then
+    for i, objid in ipairs(objids) do
+      local dstPos = ActorHelper:getMyPosition(objid)
+      if (dstPos) then
+        if (isTwo) then
+          distance = MathHelper:getDistanceV2(pos, dstPos)
+        else
+          distance = MathHelper:getDistance(pos, dstPos)
+        end
+        if (distance <= radius) then
+          table.insert(arr, objid)
+        end
+      end
+    end
+  end
+  return arr
 end
 
 -- 获取数组中活着的actor

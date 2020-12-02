@@ -2,6 +2,9 @@
 MyMonsterHelper = {
   soldierMap = {}, -- { objid -> soldier }
   needDelSoldiers = {}, -- { objid } 需要删除的小兵id
+  buildMap = {}, -- { objid -> soldier }
+  needDelBuilds = {}, -- { objid } 需要删除的建筑
+  buildid = 1,
 }
 
 -- 初始化
@@ -12,6 +15,16 @@ function MyMonsterHelper:init ()
   -- ox = Ox:new()
   -- local monsterModels = { chick, dog, wolf, ox }
   -- MonsterHelper:init(monsterModels)
+  MyMonsterHelper:initBuilds()
+end
+
+function MyMonsterHelper:initBuilds ()
+  Tower:newTower(-16, 7, 1, 1)
+  Tower:newTower(-29, 7, 1, 1)
+  Crystal:newTower(-43, 7, 1, 1)
+  Tower:newTower(17, 7, 1, 2)
+  Tower:newTower(30, 7, 1, 2)
+  Crystal:newTower(44, 7, 1, 2)
 end
 
 -- 获取行动小兵
@@ -42,6 +55,40 @@ function MyMonsterHelper:runSoldiers ()
     local objid = self.needDelSoldiers[i]
     self.soldierMap[objid] = nil
     table.remove(self.needDelSoldiers, i)
+  end
+end
+
+-- 获取一个id
+function MyMonsterHelper:getBuildid ()
+  local id = self.buildid
+  self.buildid = self.buildid + 1
+  return id
+end
+
+-- 加入有效建筑
+function MyMonsterHelper:addBuild (build)
+  if (build) then
+    build.objid = MyMonsterHelper:getBuildid()
+    self.buildMap[build.objid] = build
+  end
+end
+
+-- 移除无效建筑
+function MyMonsterHelper:delBuild (objid)
+  table.insert(self.needDelBuilds, objid)
+end
+
+-- 建筑行为
+function MyMonsterHelper:runBuilds ()
+  for objid, build in pairs(self.buildMap) do
+    if (build) then
+      build:run()
+    end
+  end
+  for i = #self.needDelBuilds, 1, -1 do
+    local objid = self.needDelBuilds[i]
+    self.buildMap[objid] = nil
+    table.remove(self.needDelBuilds, i)
   end
 end
 

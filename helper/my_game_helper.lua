@@ -64,7 +64,6 @@ function MyGameHelper:startGame ()
   MyAreaHelper:init()
   MyStoryHelper:init()
   -- body
-  TimeHelper:setHour(15)
 end
 
 -- 游戏运行时
@@ -93,6 +92,8 @@ function MyGameHelper:atSecond (second)
   -- body
   -- 小兵前进
   MyMonsterHelper:runSoldiers()
+  -- 建筑
+  MyMonsterHelper:runBuilds()
   if (second % 30 == 2) then
     Soldier11:newSolders(3)
     Soldier12:newSolders(2)
