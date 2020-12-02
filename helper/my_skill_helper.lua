@@ -89,6 +89,9 @@ function MySkillHelper:attack (objid, toobjid, speed)
       toPos = ActorHelper:getEyeHeightPosition(toobjid)
     end
   end
+  if (not(toPos)) then -- 目标消失
+    return nil
+  end
   local tempPos = MyPosition:new(toPos.x, pos.y, toPos.z)
   local distance = MathHelper:getDistance(pos, tempPos) -- 水平的距离
   if (distance <= collideDistance) then
@@ -107,12 +110,16 @@ end
 function MySkillHelper:continueAttack (objid, toobjid, speed, callback)
   local t = objid .. 'remoteAtt'
   TimeHelper:callFnContinueRuns(function ()
-    if (MySkillHelper:attack(objid, toobjid, speed)) then
+    local result = MySkillHelper:attack(objid, toobjid, speed)
+    if (result) then -- 命中
       TimeHelper:delFnContinueRuns(t)
       WorldHelper:despawnActor(objid)
       if (callback) then
         callback()
       end
+    elseif (type(result) == 'nil') then -- 消失
+      TimeHelper:delFnContinueRuns(t)
+      WorldHelper:despawnActor(objid)
     end
   end, -1, t)
 end

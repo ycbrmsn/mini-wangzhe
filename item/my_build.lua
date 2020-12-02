@@ -44,10 +44,10 @@ function BaseBuild:searchEnemy ()
 end
 
 -- 攻击
-function BaseBuild:attack (toobjid)
-  if (self.attCd == 0) then
+function BaseBuild:attack ()
+  if (self.targetObjid) then
     self:resetAttCd()
-    self:remoteAtt(toobjid)
+    self:remoteAtt(self.targetObjid)
   end
 end
 
@@ -56,7 +56,8 @@ function BaseBuild:resetAttCd ()
   self.attCd = self.attSpace
   TimeHelper:callFnFastRuns(function ()
     self.attCd = 0
-  end, 0.05 * self.attSpace, self.pos:toSimpleString() .. 'resetAttCd')
+    LogHelper:debug('恢复：', self.objid)
+  end, 0.05 * self.attSpace, self.objid .. 'resetAttCd')
 end
 
 -- 远程攻击
@@ -72,19 +73,20 @@ function BaseBuild:remoteAtt (toobjid)
 end
 
 function BaseBuild:run ()
-  local objid = self:searchEnemy()
-  if (objid) then -- 找到目标
-    -- 设置伤害
-    if (not(self.targetObjid) or objid ~= self.targetObjid) then -- 目标不同
-      self.att = self.baseAtt
-      self.targetObjid = objid
-    else -- 目标相同
-      if (ActorHelper:isPlayer(objid)) then -- 玩家
-        self.att = self.att * 2
+  if (self.attCd == 0) then
+    local objid = self:searchEnemy()
+    if (objid) then -- 找到目标
+      -- 设置伤害
+      if (not(self.targetObjid) or objid ~= self.targetObjid) then -- 目标不同
+        self.att = self.baseAtt
+      else -- 目标相同
+        if (ActorHelper:isPlayer(objid)) then -- 玩家
+          self.att = self.att * 2
+        end
       end
     end
-    -- 攻击
-    self:remoteAtt(self.targetObjid)
+    self.targetObjid = objid
+    self:attack()
   end
 end
 
