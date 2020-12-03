@@ -120,7 +120,7 @@ function BaseBuild:changeHp (hp)
   if (hp <= 0) then
     MyMonsterHelper:delBuild(self.objid)
     if (self.name == 'crystal') then
-      TeamHelper:setTeamResults(self.teamid, 2)
+      TeamHelper:setTeamResults(self.teamid % 2 + 1, 1)
     else
       local areaid = AreaHelper:createAreaRect(self.pos, { x = 2, y = 1, z = 2 })
       AreaHelper:clearAllBlock(areaid, MyMap.BLOCK.AIR)

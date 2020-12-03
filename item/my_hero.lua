@@ -152,7 +152,7 @@ Zhangliang = BaseHero:new({
   name = 'zhangliang',
   attCategory = 2, -- 远程攻击
   phyAtt = 50, -- 物攻
-  magAtt = 10, -- 法攻
+  magAtt = 100, -- 法攻
   maxHp = 1000, -- 最大生命
   maxMp = 1000, -- 最大法力
   speed = 10, -- 移动速度
@@ -240,8 +240,8 @@ end
 
 -- 敌方进入言灵壁垒区域 objid敌方
 function Zhangliang:enterSkill1 (objid, areaid)
-  -- if (not(ActorHelper:isTheSameTeamActor(objid, skillObj))) then -- 不同队伍
-  if (true) then
+  if (not(ActorHelper:isTheSameTeamActor(self.objid, objid))) then -- 不同队伍
+  -- if (true) then
     local info = MySkillHelper:getSkillInfo(self.objid, 1)
     local pos = info[areaid].pos
     local level = self.skillLevels[1]
@@ -251,6 +251,7 @@ function Zhangliang:enterSkill1 (objid, areaid)
     WorldHelper:stopBodyEffect(pos, particleid)
     -- 眩晕迟缓效果
     ActorHelper:playHurt(objid)
+    ActorHelper:damageActor(self.objid, objid, self.magAtt)
     ActorHelper:addBuff(objid, MyMap.BUFF.DIZZY, 1, 20) -- 眩晕
     -- 根据level与玩家属性计算伤害
   end
@@ -340,6 +341,7 @@ function Zhangliang:generateSkill2 (pos, angle, distance)
           MyMap.ITEM.AMMUNITION1, attPos, attPos, 0)
         MySkillHelper:continueAttack(projectileid, nearestObjid, 4, function ()
           ActorHelper:playHurt(nearestObjid)
+          ActorHelper:damageActor(self.objid, nearestObjid, self.magAtt)
         end)
       end
     end
@@ -379,4 +381,6 @@ end
 -- 生成
 function Zhangliang:generateSkill3 (toobjid)
   ActorHelper:addBuff(toobjid, MyMap.BUFF.CONTROL, 1, 20 * 3) -- 被掌控
+  ActorHelper:playHurt(toobjid)
+  ActorHelper:damageActor(self.objid, toobjid, self.magAtt * 3)
 end
