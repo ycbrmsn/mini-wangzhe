@@ -114,8 +114,26 @@ function BaseBuild:run ()
   end
 end
 
+-- 生命变化
+function BaseBuild:changeHp (hp)
+  self.hp = hp
+  if (hp <= 0) then
+    MyMonsterHelper:delBuild(self.objid)
+    if (self.name == 'crystal') then
+      TeamHelper:setTeamResults(self.teamid, 2)
+    else
+      local areaid = AreaHelper:createAreaRect(self.pos, { x = 2, y = 1, z = 2 })
+      AreaHelper:clearAllBlock(areaid, MyMap.BLOCK.AIR)
+      AreaHelper:clearAllBlock(areaid, MyMap.BLOCK.TOWER)
+      -- AreaHelper:clearAllBlock(areaid, MyMap.BLOCK.CRYSTAL)
+    end
+  end
+end
+
 -- 防御塔
-Tower = BaseBuild:new()
+Tower = BaseBuild:new({
+  name = 'tower', -- 名称
+})
 
 function Tower:new (o)
   o = o or {}
@@ -129,6 +147,7 @@ Crystal = BaseBuild:new({
   maxHp = 5000, -- 最大生命
   hp = 5000,
   attSpace = 60, -- 攻击间隔
+  name = 'crystal', -- 名称
 })
 
 function Crystal:new (o)

@@ -34,11 +34,13 @@ end
 
 -- 重新生成小兵(用于小兵因bug消失)
 function BaseSoldier:renewSoldier ()
-  local objids = WorldHelper:spawnCreature(self.x, self.y, self.z, self.actorid, 1)
-  MyMonsterHelper:delSoldier(self.objid)
-  self.objid = objids[1]
-  self:init()
-  MyMonsterHelper:addSoldier(self)
+  if (self.x) then
+    local objids = WorldHelper:spawnCreature(self.x, self.y, self.z, self.actorid, 1)
+    MyMonsterHelper:delSoldier(self.objid)
+    self.objid = objids[1]
+    self:init()
+    MyMonsterHelper:addSoldier(self)
+  end
 end
 
 -- 加入小兵

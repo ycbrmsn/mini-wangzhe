@@ -109,6 +109,11 @@ function MyActorHelper:actorChangeAttr (objid, actorattr)
     local soldier = MyMonsterHelper:getSoldier(objid)
     if (soldier) then
       soldier:changeHp(hp)
+    else
+      local build = MyMonsterHelper:getBuild(objid)
+      if (build) then
+        build:changeHp(hp)
+      end
     end
   end
 end

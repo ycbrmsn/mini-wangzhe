@@ -58,6 +58,11 @@ function MyMonsterHelper:runSoldiers ()
   end
 end
 
+-- 获取有效建筑
+function MyMonsterHelper:getBuild (objid)
+  return self.buildMap[objid]
+end
+
 -- 加入有效建筑
 function MyMonsterHelper:addBuild (build)
   if (build) then

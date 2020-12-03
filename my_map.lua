@@ -1,7 +1,9 @@
 -- 地图相关数据
 MyMap = {
   BLOCK = {
-    
+    AIR = 1001, -- 空气方块
+    TOWER = 2005, -- 防御塔
+    CRYSTAL = 2006, -- 水晶
   },
   ITEM = {
     ADJUST_CAMERA = 4097, -- 调整视角
