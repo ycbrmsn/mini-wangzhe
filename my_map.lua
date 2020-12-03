@@ -22,6 +22,7 @@ MyMap = {
     SOLDIER22 = 8, -- 蓝方远程兵
     SOLDIER23 = 9, -- 蓝方攻城兵
     SOLDIER24 = 10, -- 蓝方超级兵
+    BUILD = 11, -- 建筑生物
   },
   BUFF = {
     CONTINUE = 999, -- 继续探险

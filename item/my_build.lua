@@ -20,6 +20,31 @@ function BaseBuild:new (o)
   return o
 end
 
+function BaseBuild:newBuild (x, y, z, teamid)
+  local pos = MyPosition:new(x, y, z)
+  local objids = WorldHelper:getCreaturesAroundPos(pos, 4, 2)
+  objids = ActorHelper:getSpecificActors(objids, MyMap.ACTOR.BUILD)
+  if (#objids > 0) then
+    local objid = objids[1]
+    CreatureHelper:closeAI(objid)
+    CreatureHelper:setMaxHp(objid, self.maxHp)
+    CreatureHelper:setHp(objid, self.hp)
+    CreatureHelper:setTeam(objid, teamid)
+    ActorHelper:setPosition(objid, x, y + 2.5, z)
+    CreatureHelper:showHp(objid)
+    local build = self:new({
+      objid = objid,
+      pos = pos,
+      teamid = teamid,
+    })
+    MyMonsterHelper:addBuild(build)
+  else
+    TimeHelper:callFnFastRuns(function ()
+      self:newBuild(x, y, z, teamid)
+    end, 1)
+  end
+end
+
 -- 搜索敌人
 function BaseBuild:searchEnemy ()
   if (self.targetObjid) then -- 当前有目标
@@ -56,7 +81,6 @@ function BaseBuild:resetAttCd ()
   self.attCd = self.attSpace
   TimeHelper:callFnFastRuns(function ()
     self.attCd = 0
-    LogHelper:debug('恢复：', self.objid)
   end, 0.05 * self.attSpace, self.objid .. 'resetAttCd')
 end
 
@@ -100,14 +124,6 @@ function Tower:new (o)
   return o
 end
 
-function Tower:newTower (x, y, z, teamid)
-  local tower = self:new({
-    pos = MyPosition:new(x, y, z),
-    teamid = teamid,
-  })
-  MyMonsterHelper:addBuild(tower)
-end
-
 -- 水晶
 Crystal = BaseBuild:new({
   maxHp = 5000, -- 最大生命
@@ -120,12 +136,4 @@ function Crystal:new (o)
   setmetatable(o, self)
   self.__index = self
   return o
-end
-
-function Crystal:newTower (x, y, z, teamid)
-  local crystal = self:new({
-    pos = MyPosition:new(x, y, z),
-    teamid = teamid,
-  })
-  MyMonsterHelper:addBuild(crystal)
 end

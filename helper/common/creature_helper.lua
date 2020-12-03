@@ -97,7 +97,6 @@ end
 
 -- 封装原始接口
 
--- 设置生物AI是否生效
 function CreatureHelper:setAIActive (objid, isActive)
   return CommonHelper:callIsSuccessMethod(function (p)
     return Creature:setAIActive(objid, isActive)
@@ -111,7 +110,6 @@ function CreatureHelper:getWalkSpeed (objid)
   end, '获取生物行走速度', 'objid=', objid)
 end
 
--- 设置生物行走速度
 function CreatureHelper:setWalkSpeed (objid, speed)
   return CommonHelper:callIsSuccessMethod(function (p)
     return Creature:setWalkSpeed(objid, speed)
@@ -125,30 +123,32 @@ function CreatureHelper:getActorID (objid)
   end, nil, 'objid=', objid)
 end
 
--- 获取生物名称
 function CreatureHelper:getActorName (objid)
   return CommonHelper:callOneResultMethod(function (p)
     return Creature:getActorName(objid)
   end, '获取生物名称', 'objid=', objid)
 end
 
--- 获取生物属性
 function CreatureHelper:getAttr (objid, attrtype)
   return CommonHelper:callOneResultMethod(function (p)
     return Creature:getAttr(objid, attrtype)
   end, '获取生物属性', 'objid=', objid, ',attrtype=', attrtype)
 end
 
--- 设置生物属性
 function CreatureHelper:setAttr (objid, attrtype, val)
   return CommonHelper:callIsSuccessMethod(function (p)
     return Creature:setAttr(objid, attrtype, val)
   end, '设置生物属性', 'objid=', objid, ',attrtype=', attrtype, ',val=', val)
 end
 
--- 获取生物队伍
 function CreatureHelper:getTeam (objid)
   return CommonHelper:callOneResultMethod(function (p)
     return Creature:getTeam(objid)
   end, '获取生物队伍', 'objid=', objid)
+end
+
+function CreatureHelper:setTeam (objid, teamid)
+  return CommonHelper:callIsSuccessMethod(function (p)
+    return Creature:setTeam(objid, teamid)
+  end, '设置生物队伍', 'objid=', objid, ',teamid=', teamid)
 end

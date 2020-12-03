@@ -4,7 +4,6 @@ MyMonsterHelper = {
   needDelSoldiers = {}, -- { objid } 需要删除的小兵id
   buildMap = {}, -- { objid -> soldier }
   needDelBuilds = {}, -- { objid } 需要删除的建筑
-  buildid = 1,
 }
 
 -- 初始化
@@ -18,13 +17,14 @@ function MyMonsterHelper:init ()
   MyMonsterHelper:initBuilds()
 end
 
+-- 初始化建筑
 function MyMonsterHelper:initBuilds ()
-  Tower:newTower(-16, 7, 1, 1)
-  Tower:newTower(-29, 7, 1, 1)
-  Crystal:newTower(-43, 7, 1, 1)
-  Tower:newTower(17, 7, 1, 2)
-  Tower:newTower(30, 7, 1, 2)
-  Crystal:newTower(44, 7, 1, 2)
+  Tower:newBuild(-16, 7, 1, 1)
+  Tower:newBuild(-29, 7, 1, 1)
+  Crystal:newBuild(-43, 7, 1, 1)
+  Tower:newBuild(17, 7, 1, 2)
+  Tower:newBuild(30, 7, 1, 2)
+  Crystal:newBuild(44, 7, 1, 2)
 end
 
 -- 获取行动小兵
@@ -58,17 +58,9 @@ function MyMonsterHelper:runSoldiers ()
   end
 end
 
--- 获取一个id
-function MyMonsterHelper:getBuildid ()
-  local id = self.buildid
-  self.buildid = self.buildid + 1
-  return id
-end
-
 -- 加入有效建筑
 function MyMonsterHelper:addBuild (build)
   if (build) then
-    build.objid = MyMonsterHelper:getBuildid()
     self.buildMap[build.objid] = build
   end
 end

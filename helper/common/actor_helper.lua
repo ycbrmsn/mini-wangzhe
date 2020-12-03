@@ -711,6 +711,24 @@ function ActorHelper:getAliveActors (objids)
   return aliveObjids
 end
 
+-- 获取特定的生物
+function ActorHelper:getSpecificActors (objids, actorid)
+  local arr = {}
+  if (objids and #objids > 0) then
+    if (actorid) then
+      for i, objid in ipairs(objids) do
+        local aid = CreatureHelper:getActorID(objid)
+        if (aid and aid == actorid) then
+          table.insert(arr, objid)
+        end
+      end
+    else
+      return objids
+    end
+  end
+  return arr
+end
+
 -- 获取有攻击目标的生物
 function ActorHelper:getHasTargetActors (objids)
   local arr = {}
