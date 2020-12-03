@@ -87,15 +87,18 @@ end
 -- 尝试攻击
 function BaseSoldier:tryAttack (toobjid)
   local distance = MathHelper:getDistanceV2(self.objid, toobjid)
+  local dstPos
   if (distance > self.attSize) then -- 超出攻击距离
     local pos1 = ActorHelper:getMyPosition(self.objid)
     local pos2 = ActorHelper:getMyPosition(toobjid)
-    local dstPos = MathHelper:getPos2PosInLineDistancePosition(pos1, pos2, self.attSize - 1)
+    dstPos = MathHelper:getPos2PosInLineDistancePosition(pos1, pos2, self.attSize - 1.5)
     if (not(BlockHelper:isAirBlockOffset(dstPos))) then -- 不可以到达
       dstPos = pos2
     end
     ActorHelper:tryMoveToPos(self.objid, dstPos.x, dstPos.y, dstPos.z)
   else -- 攻击距离内
+    dstPos = ActorHelper:getMyPosition(self.objid)
+    ActorHelper:tryMoveToPos(self.objid, dstPos.x, dstPos.y, dstPos.z)
     self:attack(toobjid)
   end
 end
@@ -277,16 +280,16 @@ end
 local o1 = function ()
   return {
     teamid = 1, -- 队伍
-    initPos = MyPosition:new(-40, 7, 0),
-    toPos = MyPosition:new(40, 7, 0),
+    initPos = MyPosition:new(-26, 7, 0),
+    toPos = MyPosition:new(27, 7, 0),
   }
 end
 
 local o2 = function ()
   return {
     teamid = 2, -- 队伍
-    initPos = MyPosition:new(40, 7, 0),
-    toPos = MyPosition:new(-40, 7, 0),
+    initPos = MyPosition:new(27, 7, 0),
+    toPos = MyPosition:new(-26, 7, 0),
   }
 end
 

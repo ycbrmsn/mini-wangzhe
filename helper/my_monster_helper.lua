@@ -19,12 +19,12 @@ end
 
 -- 初始化建筑
 function MyMonsterHelper:initBuilds ()
-  Tower:newBuild(-16, 7, 1, 1)
-  Tower:newBuild(-29, 7, 1, 1)
-  Crystal:newBuild(-43, 7, 1, 1)
-  Tower:newBuild(17, 7, 1, 2)
-  Tower:newBuild(30, 7, 1, 2)
-  Crystal:newBuild(44, 7, 1, 2)
+  Tower:newBuild(-12, 7, 1, 1)
+  Tower:newBuild(-20, 7, 1, 1)
+  Crystal:newBuild(-29, 7, 1, 1)
+  Tower:newBuild(13, 7, 1, 2)
+  Tower:newBuild(21, 7, 1, 2)
+  Crystal:newBuild(30, 7, 1, 2)
 end
 
 -- 获取行动小兵
