@@ -229,8 +229,9 @@ function Soldier02:remoteAtt (toobjid)
     ActorHelper:playHurt(toobjid)
     ActorHelper:damageActor(self.objid, toobjid, self.att)
   end
-  local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
-    MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
+  -- local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
+  --   MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
+  local projectileid = MyGameHelper:getAmmu(2, pos1)
   MySkillHelper:continueAttack(projectileid, toobjid, 4, callback)
 end
 
@@ -272,8 +273,9 @@ function Soldier03:remoteAtt (toobjid)
     ActorHelper:playHurt(toobjid)
     ActorHelper:damageActor(self.objid, toobjid, self.att)
   end
-  local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
-    MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
+  -- local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
+  --   MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
+  local projectileid = MyGameHelper:getAmmu(2, pos1)
   MySkillHelper:continueAttack(projectileid, toobjid, 4, callback)
 end
 

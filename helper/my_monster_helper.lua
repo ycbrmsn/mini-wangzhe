@@ -46,15 +46,15 @@ end
 
 -- 小兵行动
 function MyMonsterHelper:runSoldiers ()
-  for objid, soldier in pairs(self.soldierMap) do
-    if (soldier) then
-      soldier:run()
-    end
-  end
   for i = #self.needDelSoldiers, 1, -1 do
     local objid = self.needDelSoldiers[i]
     self.soldierMap[objid] = nil
     table.remove(self.needDelSoldiers, i)
+  end
+  for objid, soldier in pairs(self.soldierMap) do
+    if (soldier) then
+      soldier:run()
+    end
   end
 end
 
@@ -77,15 +77,15 @@ end
 
 -- 建筑行为
 function MyMonsterHelper:runBuilds ()
-  for objid, build in pairs(self.buildMap) do
-    if (build) then
-      build:run()
-    end
-  end
   for i = #self.needDelBuilds, 1, -1 do
     local objid = self.needDelBuilds[i]
     self.buildMap[objid] = nil
     table.remove(self.needDelBuilds, i)
+  end
+  for objid, build in pairs(self.buildMap) do
+    if (build) then
+      build:run()
+    end
   end
 end
 
