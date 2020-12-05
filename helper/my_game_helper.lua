@@ -135,12 +135,12 @@ function MyGameHelper:atSecond (second)
   -- 建筑
   MyMonsterHelper:runBuilds()
   if (second % 30 == 2) then
-    Soldier11:newSolders(3)
-    Soldier12:newSolders(2)
-    -- Soldier13:newSolders(4)
-    Soldier21:newSolders(3)
-    Soldier22:newSolders(2)
-    -- Soldier23:newSolders(4)
+    Soldier11:newSolders(2)
+    Soldier12:newSolders(1)
+    Soldier13:newSolders(1)
+    Soldier21:newSolders(2)
+    Soldier22:newSolders(1)
+    Soldier23:newSolders(1)
   end
 end
 

@@ -8,6 +8,7 @@ function MyPlayer:new (objid)
     y = 0,
     z = 0,
     yawDiff = 270,
+    pos = {},
   }
   o.action = BasePlayerAction:new(o)
   o.attr = BasePlayerAttr:new(o)

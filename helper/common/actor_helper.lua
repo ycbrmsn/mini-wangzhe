@@ -657,13 +657,18 @@ function ActorHelper:isTwoInFrontOfOne (objid1, objid2)
   end
 end
 
--- 获取距离最近的actor
-function ActorHelper:getNearestActor (objids, pos)
+-- 获取距离最近的actor isTwo是否是二维平面
+function ActorHelper:getNearestActor (objids, pos, isTwo)
   local objid, tempDistance
   for i, v in ipairs(objids) do
     local p = ActorHelper:getMyPosition(v)
     if (p) then
-      local distance = MathHelper:getDistance(p, pos)
+      local distance
+      if (isTwo) then
+        distance = MathHelper:getDistanceV2(p, pos)
+      else
+        distance = MathHelper:getDistance(p, pos)
+      end
       if (not(tempDistance) or tempDistance > distance) then
         tempDistance = distance
         objid = v

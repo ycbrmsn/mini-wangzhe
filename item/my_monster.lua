@@ -34,8 +34,8 @@ end
 
 -- 重新生成小兵(用于小兵因bug消失)
 function BaseSoldier:renewSoldier ()
-  if (self.x) then
-    local objids = WorldHelper:spawnCreature(self.x, self.y, self.z, self.actorid, 1)
+  if (self.pos) then
+    local objids = WorldHelper:spawnCreature(self.pos.x, self.pos.y, self.pos.z, self.actorid, 1)
     MyMonsterHelper:delSoldier(self.objid)
     self.objid = objids[1]
     self:init()
@@ -48,6 +48,8 @@ function BaseSoldier:addSoldier (objid)
   local o = { objid = objid }
   setmetatable(o, self)
   self.__index = self
+  local x, y, z = ActorHelper:getPosition(objid)
+  o.pos = MyPosition:new(x, y, z)
   MyMonsterHelper:addSoldier(o)
   return o
 end
@@ -74,7 +76,7 @@ function BaseSoldier:run ()
     -- 记录小兵的位置等数据
     local x, y, z = ActorHelper:getPosition(self.objid)
     if (x) then
-      self.x, self.y, self.z = x, y, z
+      self.pos.x, self.pos.y, self.pos.z = x, y, z
     end
   end
 end
@@ -159,16 +161,27 @@ end
 -- 搜索敌人
 function Soldier01:searchEnemy ()
   local pos = ActorHelper:getMyPosition(self.objid)
-  local dim = { x = self.lookSize, y = 3, z = self.lookSize }
-  local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
-  if (objids and #objids == 0) then
-    objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  -- local dim = { x = self.lookSize, y = 3, z = self.lookSize }
+  -- local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+  -- if (objids and #objids == 0) then
+  --   objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  -- end
+  -- if (not(objids) or #objids == 0) then -- 没有目标
+  --   return nil
+  -- else
+  --   return ActorHelper:getNearestActor(objids, pos)
+  -- end
+  -- local t1 = os.time()
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
   end
-  if (not(objids) or #objids == 0) then -- 没有目标
-    return nil
-  else
-    return ActorHelper:getNearestActor(objids, pos)
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
   end
+  -- local t2 = os.time()
+  -- LogHelper:debug('cost: ', t2 - t1)
+  return toobjid
 end
 
 -- 近战攻击
@@ -207,16 +220,24 @@ end
 -- 搜索敌人
 function Soldier02:searchEnemy ()
   local pos = ActorHelper:getMyPosition(self.objid)
-  local dim = { x = self.lookSize, y = 3, z = self.lookSize }
-  local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
-  if (objids and #objids == 0) then
-    objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  -- local dim = { x = self.lookSize, y = 3, z = self.lookSize }
+  -- local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+  -- if (objids and #objids == 0) then
+  --   objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  -- end
+  -- if (not(objids) or #objids == 0) then -- 没有目标
+  --   return nil
+  -- else
+  --   return ActorHelper:getNearestActor(objids, pos)
+  -- end
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
   end
-  if (not(objids) or #objids == 0) then -- 没有目标
-    return nil
-  else
-    return ActorHelper:getNearestActor(objids, pos)
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
   end
+  return toobjid
 end
 
 -- 远程攻击
@@ -251,16 +272,24 @@ end
 -- 搜索敌人
 function Soldier03:searchEnemy ()
   local pos = ActorHelper:getMyPosition(self.objid)
-  local dim = { x = self.lookSize, y = 3, z = self.lookSize }
-  local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
-  if (objids and #objids == 0) then
-    objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  -- local dim = { x = self.lookSize, y = 3, z = self.lookSize }
+  -- local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
+  -- if (objids and #objids == 0) then
+  --   objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
+  -- end
+  -- if (not(objids) or #objids == 0) then -- 没有目标
+  --   return nil
+  -- else
+  --   return ActorHelper:getNearestActor(objids, pos)
+  -- end
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
   end
-  if (not(objids) or #objids == 0) then -- 没有目标
-    return nil
-  else
-    return ActorHelper:getNearestActor(objids, pos)
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
   end
+  return toobjid
 end
 
 -- 远程攻击
@@ -282,6 +311,7 @@ end
 local o1 = function ()
   return {
     teamid = 1, -- 队伍
+    toteamid = 2, -- 对方队伍
     initPos = MyPosition:new(-26, 7, 0),
     toPos = MyPosition:new(27, 7, 0),
   }
@@ -290,6 +320,7 @@ end
 local o2 = function ()
   return {
     teamid = 2, -- 队伍
+    toteamid = 1, -- 对方队伍
     initPos = MyPosition:new(27, 7, 0),
     toPos = MyPosition:new(-26, 7, 0),
   }

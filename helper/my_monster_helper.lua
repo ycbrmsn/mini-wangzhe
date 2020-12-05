@@ -4,6 +4,7 @@ MyMonsterHelper = {
   needDelSoldiers = {}, -- { objid } 需要删除的小兵id
   buildMap = {}, -- { objid -> soldier }
   needDelBuilds = {}, -- { objid } 需要删除的建筑
+  monsterInfos = {}, -- { index -> { soldier -> { 1 = {}, 2 = {} }, build -> ..., player -> ... } }
 }
 
 -- 初始化
@@ -87,6 +88,66 @@ function MyMonsterHelper:runBuilds ()
       build:run()
     end
   end
+end
+
+-- 获取特定队伍的所有敌方
+function MyMonsterHelper:getTeamMonsterInfos (teamid)
+  local index = MyGameHelper.index
+  local monsterInfo = self.monsterInfos[index]
+  if (not(monsterInfo)) then
+    monsterInfo = {
+      player = { [1] = {}, [2] = {} },
+      soldier = { [1] = {}, [2] = {} },
+      build = { [1] = {}, [2] = {} },
+    }
+    self.monsterInfos[index] = monsterInfo
+    -- 十秒后删除
+    TimeHelper:callFnAfterSecond(function ()
+      self.monsterInfos[index] = nil
+    end, 10)
+    -- 玩家
+    for i, player in ipairs(PlayerHelper:getActivePlayers()) do
+      local x, y, z = ActorHelper:getPosition(player.objid)
+      if (x) then
+        player.pos.x, player.pos.y, player.pos.z = x, y, z
+        local tid = PlayerHelper:getTeam(player.objid)
+        table.insert(monsterInfo.player[tid], player)
+      end
+    end
+    -- 小兵
+    for k, soldier in pairs(self.soldierMap) do
+      local x, y, z = ActorHelper:getPosition(soldier.objid)
+      if (x) then -- 存在
+        soldier.pos.x, soldier.pos.y, soldier.pos.z = x, y, z
+        table.insert(monsterInfo.soldier[soldier.teamid], soldier)
+      end
+    end
+    -- 建筑
+    for k, build in pairs(self.buildMap) do
+      table.insert(monsterInfo.build[build.teamid], build)
+    end
+  end
+  return monsterInfo.player[teamid], monsterInfo.soldier[teamid], monsterInfo.build[teamid]
+end
+
+-- 获取最近的敌人
+function MyMonsterHelper:getEmeny (pos, teamid, category)
+  local players, soldiers, builds = MyMonsterHelper:getTeamMonsterInfos(teamid)
+  local enemyMap = { players, soldiers, builds }
+  local objid, distance = MyMonsterHelper:getNearestEmeny(enemyMap[category], pos)
+  return objid, distance
+end
+
+function MyMonsterHelper:getNearestEmeny (enemies, pos)
+  local objid, tempDistance
+  for i, enemy in ipairs(enemies) do
+    local distance = MathHelper:getDistanceV2(enemy.pos, pos)
+    if (not(tempDistance) or tempDistance > distance) then
+      tempDistance = distance
+      objid = enemy.objid
+    end
+  end
+  return objid, tempDistance
 end
 
 -- 事件
