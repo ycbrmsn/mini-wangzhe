@@ -4,7 +4,6 @@ BaseSoldier = {
   attSpace = 60, -- 攻击间隔
   attCd = 0, -- 攻击冷却
   maxHp = 1000, -- 最大生命
-  hp = 1000, -- 生命
   att = 100, -- 攻击
 }
 
@@ -12,6 +11,7 @@ function BaseSoldier:new (o)
   o = o or {}
   setmetatable(o, self)
   self.__index = self
+  o.hp = o.maxHp
   return o
 end
 
@@ -147,6 +147,7 @@ end
 
 -- 近战兵
 Soldier01 = BaseSoldier:new({
+  name = 'soldier01',
   attCategory = 1,
   attSize = 2,
 })
@@ -206,6 +207,7 @@ end
 
 -- 远程兵
 Soldier02 = BaseSoldier:new({
+  name = 'soldier02',
   attCategory = 2,
   attSize = 4,
 })
@@ -258,8 +260,11 @@ end
 
 -- 攻城车
 Soldier03 = BaseSoldier:new({
+  name = 'soldier03',
   attCategory = 2,
   attSize = 4,
+  maxHp = 1500, -- 最大生命
+  att = 150, -- 攻击
 })
 
 function Soldier03:new (o, actorid)
@@ -300,12 +305,55 @@ function Soldier03:remoteAtt (toobjid)
     -- pos2 = ActorHelper:getEyeHeightPosition(nearestObjid)
   local callback = function ()
     ActorHelper:playHurt(toobjid)
-    ActorHelper:damageActor(self.objid, toobjid, self.att)
+    local att = self.att
+    local build = MyMonsterHelper:getBuild(objid)
+    if (build) then -- 攻击建筑伤害双倍
+      att = att * 2
+    end
+    ActorHelper:damageActor(self.objid, toobjid, att)
   end
   -- local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
   --   MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
   local projectileid = MyGameHelper:getAmmu(2, pos1)
   MySkillHelper:continueAttack(projectileid, toobjid, 4, callback)
+end
+
+-- 超级兵
+Soldier04 = BaseSoldier:new({
+  name = 'soldier04',
+  attCategory = 1,
+  attSize = 2,
+  maxHp = 2000, -- 最大生命
+  att = 500, -- 攻击
+})
+
+function Soldier04:new (o, actorid)
+  o.actorid = actorid
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+-- 搜索敌人
+function Soldier04:searchEnemy ()
+  local pos = ActorHelper:getMyPosition(self.objid)
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
+  end
+  if (not(distance) or distance > self.lookSize) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
+  end
+  return toobjid
+end
+
+-- 近战攻击
+function Soldier04:meleeAtt (toobjid)
+  ActorHelper:lookAt(self.objid, toobjid)
+  TimeHelper:callFnFastRuns(function ()
+    ActorHelper:playHurt(toobjid)
+    ActorHelper:damageActor(self.objid, toobjid, self.att)
+  end, 0.3)
 end
 
 local o1 = function ()
@@ -343,3 +391,9 @@ Soldier13 = Soldier03:new(o1(), MyMap.ACTOR.SOLDIER13)
 
 -- 蓝方攻城车
 Soldier23 = Soldier03:new(o2(), MyMap.ACTOR.SOLDIER23)
+
+-- 红方超级兵
+Soldier14 = Soldier04:new(o1(), MyMap.ACTOR.SOLDIER14)
+
+-- 蓝方超级兵
+Soldier24 = Soldier04:new(o2(), MyMap.ACTOR.SOLDIER24)

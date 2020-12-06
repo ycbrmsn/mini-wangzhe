@@ -95,6 +95,30 @@ function CreatureHelper:showHp (objid, num)
   return hp, maxHp
 end
 
+function CreatureHelper:showHp2 (objid, num)
+  num = num or 10
+  local maxHp = CreatureHelper:getMaxHp(objid)
+  local hp = CreatureHelper:getHp(objid)
+  local ehp = math.floor(maxHp / num)
+  local hpStr
+  if (hp > 0) then
+    hpStr = StringHelper.fillColor
+  else
+    hpStr = ''
+  end
+  local idx = 0
+  for i = 0, num - 1 do
+    if (hp <= ehp * i and idx == 0) then
+      hpStr = hpStr .. StringHelper.emptyColor
+      idx = idx + 1
+    end
+    hpStr = hpStr .. StringHelper.hpStr
+  end
+  ActorHelper:setnickname(objid, hpStr)
+  ActorHelper:shownickname(objid, true)
+  return hp, maxHp
+end
+
 -- 封装原始接口
 
 function CreatureHelper:setAIActive (objid, isActive)

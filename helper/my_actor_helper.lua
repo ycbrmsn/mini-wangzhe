@@ -105,7 +105,7 @@ function MyActorHelper:actorChangeAttr (objid, actorattr)
   MyStoryHelper:actorChangeAttr(objid, actorattr)
   -- body
   if (actorattr == CREATUREATTR.CUR_HP) then
-    local hp = CreatureHelper:showHp(objid)
+    local hp = CreatureHelper:showHp2(objid)
     local soldier = MyMonsterHelper:getSoldier(objid)
     if (soldier) then
       soldier:changeHp(hp)

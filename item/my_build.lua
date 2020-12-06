@@ -1,8 +1,7 @@
 -- 我的建筑
 BaseBuild = {
   lookSize = 6, -- 视野
-  maxHp = 3000, -- 最大生命
-  hp = 3000, -- 生命
+  maxHp = 5000, -- 最大生命
   attSpace = 40, -- 攻击间隔
   attCd = 0, -- 攻击冷却
   attSize = 5, -- 攻击距离
@@ -17,6 +16,7 @@ function BaseBuild:new (o)
   o = o or {}
   setmetatable(o, self)
   self.__index = self
+  o.hp = o.maxHp
   return o
 end
 
@@ -145,8 +145,7 @@ end
 
 -- 水晶
 Crystal = BaseBuild:new({
-  maxHp = 5000, -- 最大生命
-  hp = 5000,
+  maxHp = 10000, -- 最大生命
   attSpace = 60, -- 攻击间隔
   name = 'crystal', -- 名称
 })

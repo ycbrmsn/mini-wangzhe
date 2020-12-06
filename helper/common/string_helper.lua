@@ -6,6 +6,9 @@ StringHelper = {
   speakColor = '#ceeeeee',
   fillStr = '■',
   emptyStr = '□',
+  hpStr = '|', -- │|
+  fillColor = '#c01ddaa',
+  emptyColor = '#W',
 }
 
 --[[
