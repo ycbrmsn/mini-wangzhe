@@ -98,6 +98,9 @@ end
 function CreatureHelper:showHp2 (objid, num)
   num = num or 10
   local maxHp = CreatureHelper:getMaxHp(objid)
+  if (not(maxHp)) then
+    return nil
+  end
   local hp = CreatureHelper:getHp(objid)
   local ehp = math.floor(maxHp / num)
   local hpStr
