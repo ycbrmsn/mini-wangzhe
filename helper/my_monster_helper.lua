@@ -109,9 +109,12 @@ function MyMonsterHelper:getTeamMonsterInfos (teamid)
     for i, player in ipairs(PlayerHelper:getActivePlayers()) do
       local x, y, z = ActorHelper:getPosition(player.objid)
       if (x) then
-        player.pos.x, player.pos.y, player.pos.z = x, y, z
-        local tid = PlayerHelper:getTeam(player.objid)
-        table.insert(monsterInfo.player[tid], player)
+        local hp = PlayerHelper:getHp(player.objid)
+        if (hp and hp > 0) then
+          player.pos.x, player.pos.y, player.pos.z = x, y, z
+          local tid = PlayerHelper:getTeam(player.objid)
+          table.insert(monsterInfo.player[tid], player)
+        end
       end
     end
     -- 小兵
