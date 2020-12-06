@@ -119,6 +119,7 @@ function BaseBuild:changeHp (hp)
   self.hp = hp
   if (hp <= 0) then
     MyMonsterHelper:delBuild(self.objid)
+    WorldHelper:despawnActor(self.objid)
     if (self.name == 'crystal') then
       LogHelper:debug('被毁水晶队伍：', self.teamid, '-', self.teamid % 2)
       TeamHelper:setTeamResults(self.teamid % 2 + 1, 1)
