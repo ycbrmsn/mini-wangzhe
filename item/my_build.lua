@@ -121,8 +121,9 @@ function BaseBuild:changeHp (hp)
     MyMonsterHelper:delBuild(self.objid)
     WorldHelper:despawnActor(self.objid)
     if (self.name == 'crystal') then
-      LogHelper:debug('被毁水晶队伍：', self.teamid, '-', self.teamid % 2)
-      TeamHelper:setTeamResults(self.teamid % 2 + 1, 1)
+      -- LogHelper:debug('被毁水晶队伍：', self.teamid, '-', self.teamid % 2)
+      TeamHelper:setTeamResults(self.teamid % 2 + 1, 1) -- 敌方胜利
+      TeamHelper:setTeamResults(self.teamid, 2) -- 己方失败
     else
       local areaid = AreaHelper:createAreaRect(self.pos, { x = 2, y = 1, z = 2 })
       AreaHelper:clearAllBlock(areaid, MyMap.BLOCK.AIR)
