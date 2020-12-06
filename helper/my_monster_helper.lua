@@ -137,11 +137,15 @@ function MyMonsterHelper:getTeamMonsterInfos (teamid)
 end
 
 -- 获取最近的敌人
-function MyMonsterHelper:getEmeny (pos, teamid, category)
+function MyMonsterHelper:getEmeny (pos, teamid, category, lookSize)
   local players, soldiers, builds = MyMonsterHelper:getTeamMonsterInfos(teamid)
   local enemyMap = { players, soldiers, builds }
   local objid, distance = MyMonsterHelper:getNearestEmeny(enemyMap[category], pos)
-  return objid, distance
+  if (distance and distance <= lookSize) then
+    return objid, distance
+  else
+    return nil
+  end
 end
 
 function MyMonsterHelper:getNearestEmeny (enemies, pos)

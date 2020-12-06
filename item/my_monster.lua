@@ -172,16 +172,13 @@ function Soldier01:searchEnemy ()
   -- else
   --   return ActorHelper:getNearestActor(objids, pos)
   -- end
-  -- local t1 = os.time()
-  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2, self.lookSize) -- 小兵
+  if (not(toobjid)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3, self.lookSize) -- 建筑
   end
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
+  if (not(toobjid)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1, self.lookSize) -- 英雄
   end
-  -- local t2 = os.time()
-  -- LogHelper:debug('cost: ', t2 - t1)
   return toobjid
 end
 
@@ -222,22 +219,12 @@ end
 -- 搜索敌人
 function Soldier02:searchEnemy ()
   local pos = ActorHelper:getMyPosition(self.objid)
-  -- local dim = { x = self.lookSize, y = 3, z = self.lookSize }
-  -- local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
-  -- if (objids and #objids == 0) then
-  --   objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
-  -- end
-  -- if (not(objids) or #objids == 0) then -- 没有目标
-  --   return nil
-  -- else
-  --   return ActorHelper:getNearestActor(objids, pos)
-  -- end
-  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2, self.lookSize) -- 小兵
+  if (not(toobjid)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3, self.lookSize) -- 建筑
   end
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
+  if (not(toobjid)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1, self.lookSize) -- 英雄
   end
   return toobjid
 end
@@ -277,22 +264,12 @@ end
 -- 搜索敌人
 function Soldier03:searchEnemy ()
   local pos = ActorHelper:getMyPosition(self.objid)
-  -- local dim = { x = self.lookSize, y = 3, z = self.lookSize }
-  -- local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, self.objid, false)
-  -- if (objids and #objids == 0) then
-  --   objids = ActorHelper:getAllPlayersArroundPos(pos, dim, self.objid, false)
-  -- end
-  -- if (not(objids) or #objids == 0) then -- 没有目标
-  --   return nil
-  -- else
-  --   return ActorHelper:getNearestActor(objids, pos)
-  -- end
-  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3, self.lookSize) -- 建筑
+  if (not(toobjid)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2, self.lookSize) -- 小兵
   end
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
+  if (not(toobjid)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1, self.lookSize) -- 英雄
   end
   return toobjid
 end
@@ -312,8 +289,6 @@ function Soldier03:remoteAtt (toobjid)
     end
     ActorHelper:damageActor(self.objid, toobjid, att)
   end
-  -- local projectileid = WorldHelper:spawnProjectileByPos(self.objid, 
-  --   MyMap.ITEM.AMMUNITION2, pos1, pos1, 0)
   local projectileid = MyGameHelper:getAmmu(2, pos1)
   MySkillHelper:continueAttack(projectileid, toobjid, 4, callback)
 end
@@ -337,12 +312,12 @@ end
 -- 搜索敌人
 function Soldier04:searchEnemy ()
   local pos = ActorHelper:getMyPosition(self.objid)
-  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2) -- 小兵
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3) -- 建筑
+  local toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 2, self.lookSize) -- 小兵
+  if (not(toobjid)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 3, self.lookSize) -- 建筑
   end
-  if (not(distance) or distance > self.lookSize) then
-    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1) -- 英雄
+  if (not(distance)) then
+    toobjid, distance = MyMonsterHelper:getEmeny(pos, self.toteamid, 1, self.lookSize) -- 英雄
   end
   return toobjid
 end
