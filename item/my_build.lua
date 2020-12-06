@@ -31,7 +31,7 @@ function BaseBuild:newBuild (x, y, z, teamid)
     CreatureHelper:setHp(objid, self.hp)
     CreatureHelper:setTeam(objid, teamid)
     ActorHelper:setPosition(objid, x, y + 2.5, z)
-    CreatureHelper:showHp(objid)
+    CreatureHelper:showHp2(objid)
     local build = self:new({
       objid = objid,
       pos = pos,

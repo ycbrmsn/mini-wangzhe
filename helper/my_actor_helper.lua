@@ -28,7 +28,7 @@ function MyActorHelper:actorCreate (objid, toobjid)
   ActorHelper:actorCreate(objid, toobjid)
   MyStoryHelper:actorCreate(objid, toobjid)
   -- body
-  CreatureHelper:showHp(objid)
+  CreatureHelper:showHp2(objid)
 end
 
 -- 生物进入区域
