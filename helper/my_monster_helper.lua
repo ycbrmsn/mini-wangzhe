@@ -124,7 +124,10 @@ function MyMonsterHelper:getTeamMonsterInfos (teamid)
     end
     -- 建筑
     for k, build in pairs(self.buildMap) do
-      table.insert(monsterInfo.build[build.teamid], build)
+      local x, y, z = ActorHelper:getPosition(build.objid)
+      if (x) then -- 建筑的代表怪物存在
+        table.insert(monsterInfo.build[build.teamid], build)
+      end
     end
   end
   return monsterInfo.player[teamid], monsterInfo.soldier[teamid], monsterInfo.build[teamid]
